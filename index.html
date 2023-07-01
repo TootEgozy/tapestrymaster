@@ -47,8 +47,33 @@
             <button onclick="generateTable()">Generate</button>
         </div>
         <div id="container"></div>
+        <button onCLick="createPattern()">Create pattern</button>
     </body>
     <script>
+        const sumRepeatingChars = (arr) => {
+            const result = [];
+            let memory = {};
+            arr.forEach((c) => {
+                if (memory[c]) memory[c] = memory[c]++; // {A: 2}
+                else {
+                    Object.keys(memory).forEach((char) => result.push(`(${char})${memory[char]}`));
+                    memory = {[c]: 1}
+                }
+            })
+            const lastChar = Object.keys(memory);
+            if (lastChar.length) result.push(lastChar[0]);
+            return result;
+        }
+
+        const condenseArray = (arr) => {
+            // [A, A, B, A, A, B]
+            // [[A, A], B, [A, A], B]
+            // [[[A, A], B], [[A, A], B]]]
+            // {(A)2, (B)1}2
+
+            console.log(sumRepeatingChars('AABAAAAABABBB'.split('')));
+        }
+        // ----------------------------------------------------
         const colorA = "blue";
         const colorB = "orange";
         const toggleColor = (event) => {
@@ -67,6 +92,7 @@
             const table = document.createElement("table");
             for(let i = 0; i < rows; i++) {
                 const row = table.insertRow();
+                row["order"] = rows-i;
                 for(let j = 0; j < cols; j++) {
                     const cell = row.insertCell();
                     cell.className = "cell";
@@ -76,6 +102,27 @@
                 }
             }
             container.appendChild(table);
+        }
+        // read table from the bottom up, extract cell color, reverse each second row to form a continuous pattern
+        const readTable = () => {
+            const tableData = { 0: ["ch", Number(rowsElement.value) + 1]};
+            const table = document.querySelector("table");
+            Array.from(table.rows).reverse().forEach((tr) => {
+                    const cells = Array.from(tr.cells).map((cell) => cell["data-color"]);
+                    tableData[tr.order] = tr.order % 2 === 0 ? cells.reverse() : cells;
+                });
+            return tableData;
+        }
+        // write a recursive function that receives an array and condense the items:
+        // [A, B, B, A, B, A, B, A, B] => [(A)1, (B)2, A(1), {(B)1, A(1)}2, (B)1 ]
+        // [A, B, B, A, B, B,]
+        const createPattern = () => {
+            const tableData = readTable();
+            condenseArray([]);
+            // for (const key in tableData) {
+            //     console.log(tableData[key]);
+            // }
+            // array1.length === array2.length && array1.every((value, index) => value === array2[index])
         }
     </script>
 </html>
