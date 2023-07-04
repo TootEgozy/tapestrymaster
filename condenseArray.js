@@ -28,6 +28,7 @@ const condenseArray = (charsArray) => {
         if(firstSeq === secondSeq) charsAt[char].indexes.push(i);
       } else {
         charsAt[char] = { indexes: [i] };
+        res.push(char);
       }
     });
     Object.keys(charsAt).forEach((char) => res.splice(charsAt[char], 0, char));
