@@ -1,23 +1,3 @@
-const sumRepeatingChars = (arr) => {
-  const result = [];
-  let memory = {};
-  arr.forEach((c, i) => {
-    if (memory[c]) memory[c] = memory[c]+1;
-    else {
-      Object.keys(memory).forEach((char) => result.push(`(${char})${memory[char]}`));
-      memory = {[c]: 1}
-    }
-  })
-  const lastChar = Object.keys(memory);
-  if (lastChar.length) result.push(`(${lastChar[0]})${memory[lastChar[0]]}`);
-  return result;
-}
-
-const isConsecutive = (prevIndexes, newIndex) => {
-  const oldGap = prevIndexes[prevIndexes.length - 1] - prevIndexes[prevIndexes.length - 2];
-  const newGap = newIndex - prevIndexes[prevIndexes.length - 1];
-  return oldGap === newGap;
-}
 
 const charObj = {
   ["char"]: {
@@ -26,22 +6,10 @@ const charObj = {
       chars: ["char", "otherChar", "thirdChar"],
       startIndex: 0,
       endIndex: 6,
+      repeat: 2
     }],
   }
 }
-
-// find the last matching sequence of a char. if it exists, return the seq obj and the index for it. else return undefined.
-// const findLastMatchingSeq = (charObj, seq) => {
-//   if(charObj.sequences) {
-//     const lastMatchIndex = charObj.sequences.findLastIndex((prevSeq) => peevSeq.chars.toString() === seq.toString());
-//     if(lastMatchIndex > -1) {
-//       const matchingSeq = charObj.sequences[lastMatchIndex];
-//       return [matchingSeq, lastMatchIndex];
-//     }
-//   }
-//   return undefined;
-// }
-
 
 // receives the char object, the array and current index.
 // check to see if there are adjacent matching sequences, if so, returns the new seq obj. if not, returns undefined.
@@ -51,15 +19,26 @@ const getAdjSeq = (char, arr, i) => {
   const firstSeq = arr.slice(lastIndex, gap).toString();
   const secondSeq = arr.slice(i, i + gap).toString();
   if(firstSeq === secondSeq) {
-    return({ chars: secondSeq.split(','), startIndex: i, endIndex: i + gap });
+    return({
+      chars: secondSeq.split(','),
+      startIndex: i,
+      endIndex: i + gap,
+      repeat: 2,
+    });
   }
   return undefined;
 }
 
 const getSequencesFromMemory = (memory) => {
-  for (let key in memory) {
+  // extract all sequences into an array
+  // map the array and edit each sequences chars into the template you want to insert
+  // (out of this scope) splice the original array, cut out the chars in start-end indexes and insert the template
+  const result = [];
+  Object.keys(memory).forEach((char) => {
+    if(char.sequences) char.sequences.forEach((seq) => result.push(seq));
+  });
+  return result;
 
-  }
 }
 
 // this function is meant to be run multiple times on the array until there are no more duplicates.
@@ -88,13 +67,29 @@ const condenseArray = (charsArr) => {
         if (seq) {
           // see if there is already a seq. if so, update, if not - create
           const dupSeq = charObj.sequences.find((prevSeq) => prevSeq.chars.toString() === seq.chars.toString());
-          if (dupSeq) dupSeq.endIndex = seq.endIndex;
-          else charObj.sequences.push(seq);
+          if (dupSeq) {
+            dupSeq.endIndex = seq.endIndex;
+            dupSeq.repeat = dupSeq.repeat + 1;
+          }
+          else {
+            charObj.sequences.push(seq);
+          }
         }
       }
       memory[char] = { indexes: [i] };
     });
-    const result = [...charsArr];
+    const sequences = getSequencesFromMemory(memory);
+    if (!sequences.length) return charsArr; // if there are no new sequences, we are done
+    const newCharsArr = [...charsArr];
+    sequences.forEach((seq) => {
+      let gap = seq.endIndex - seq.startIndex;
+      if(seq.startIndex === 0) gap ++;
+
+      const strSeq = seq.chars.toString();
+      const template = `(${strSeq})${seq.repeat}`;
+      newCharsArr.splice(seq.startIndex, gap, template);
+    });
+    return condenseArray(newCharsArr);
 }
 // בעיה! מה עם תת רצפים?
 // cut out the string based on the index of the char's last appearance
