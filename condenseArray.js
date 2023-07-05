@@ -33,13 +33,14 @@ const charObj = {
 // check to see if there are adjacent matching sequences, if so, returns the new seq obj. if not, returns undefined.
 const getAdjSeq = (char, arr, i) => {
   const lastIndex = char.indexes[char.indexes.length - 1];
-  const gap = i - lastIndex;
-  const firstSeq = arr.slice(lastIndex, gap).toString();
+  let gap = i - lastIndex;
+  // if(lastIndex === 0) gap = gap - 1;
+  const firstSeq = arr.slice(lastIndex, i).toString();
   const secondSeq = arr.slice(i, i + gap).toString();
   if(firstSeq === secondSeq) {
     return({
       chars: secondSeq.split(','),
-      startIndex: i,
+      startIndex: lastIndex,
       endIndex: i + gap,
       repeat: 2,
     });
@@ -57,7 +58,7 @@ const updateDupSeq = (dupSeq, seq) => {
 const getSequencesFromMemory = (memory) => {
   const result = [];
   Object.keys(memory).forEach((char) => {
-    if(char.sequences) char.sequences.forEach((seq) => result.push(seq));
+    if(memory[char].sequences) memory[char].sequences.forEach((seq) => result.push(seq));
   });
   return result;
 }
@@ -81,17 +82,22 @@ const condenseArray = (charsArr) => {
     charsArr.forEach((char, i) => {
       const charObj = memory[char];
       if(charObj) {
-        charObj.indexes.push(i);
         const seq = getAdjSeq(charObj, charsArr, i);
         if (seq) {
-          const dupSeq = charObj.sequences.find((prevSeq) => prevSeq.chars.toString() === seq.chars.toString());
+          const dupSeq = charObj.sequences?.find((prevSeq) => prevSeq.chars.toString() === seq.chars.toString());
           if (dupSeq) updateDupSeq(dupSeq, seq);
-          else charObj.sequences.push(seq);
+          else {
+            if (!charObj.sequences) charObj.sequences = [];
+            charObj.sequences.push(seq);
+          }
         }
+        charObj.indexes.push(i);
       }
-      memory[char] = { indexes: [i] };
+      else memory[char] = { indexes: [i] };
     });
     const sequences = getSequencesFromMemory(memory);
-    if (!sequences.length) return charsArr; // if there are no new sequences, we are done
+    if (!sequences.length) return charsArr.join(''); // if there are no new sequences, we are done
     return condenseArray(createCondensedArray(charsArr, sequences));
 }
+
+console.log(condenseArray('AAAA'.split('')));
