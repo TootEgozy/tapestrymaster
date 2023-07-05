@@ -19,9 +19,9 @@
 
 const charObj = {
   ["char"]: {
-    indexes: [0, 3],
+    indexes: [0, 3, 6],
     sequences: [{
-      chars: ["char", "otherChar", "thirdChar"],
+      chars: ["A", "B", "C"],
       startIndex: 0,
       endIndex: 6,
       repeat: 2
@@ -41,7 +41,7 @@ const getAdjSeq = (char, arr, i) => {
     return({
       chars: secondSeq.split(','),
       startIndex: lastIndex,
-      endIndex: i + gap,
+      endIndex: i + gap - 1,
       repeat: 2,
     });
   }
@@ -63,16 +63,31 @@ const getSequencesFromMemory = (memory) => {
   return result;
 }
 
+const isContainedInRange = (xStart, xEnd, yStart, yEnd) => (xStart >= yStart && xEnd <= yEnd);
+
+const isShifted = (xStart, xLength, yStart, yLength) => (xStart >= yStart && xLength === yLength);
+
+const isRedundant = (sequences, seq, i) => {
+  return !!sequences.find((s, sameI) => {
+    // TODO: that's dumb find a different way to do it
+    if(i === sameI) return false;
+    const isContained = isContainedInRange(seq.startIndex, seq.lastIndex, s.startIndex, s.lastIndex);
+    const isSameButShifted = isShifted(seq.startIndex, seq.chars.length, s.startIndex, s.chars.length);
+    return isContained ||isSameButShifted;
+  });
+};
+
 // construct the new array with duplicate chars instead of found repeating chars
 const createCondensedArray = (charsArr, sequences) => {
   const newCharsArr = [...charsArr];
-  sequences.forEach((seq) => {
-    let gap = seq.endIndex - seq.startIndex;
-    if(seq.startIndex === 0) gap ++;
-
-    const strSeq = seq.chars.toString();
-    const template = `(${strSeq})${seq.repeat}`;
-    newCharsArr.splice(seq.startIndex, gap, template);
+  sequences.forEach((seq, i) => {
+    if(!isRedundant(sequences, seq, i)) {
+      let gap = seq.endIndex - seq.startIndex;
+      if(seq.startIndex === 0) gap ++;
+      const strSeq = seq.chars.toString();
+      const template = `(${strSeq})${seq.repeat}`;
+      newCharsArr.splice(seq.startIndex, gap + 1, template);
+    }
   });
   return newCharsArr;
 }
@@ -95,9 +110,15 @@ const condenseArray = (charsArr) => {
       }
       else memory[char] = { indexes: [i] };
     });
+    console.log(memory);
     const sequences = getSequencesFromMemory(memory);
     if (!sequences.length) return charsArr.join(''); // if there are no new sequences, we are done
     return condenseArray(createCondensedArray(charsArr, sequences));
 }
 
-console.log(condenseArray('AAAA'.split('')));
+const input = 'CDABABABADCHJIKLMLMC'.split('');
+const input2 = 'GACDCCCACDCCCGHJ'.split('');
+// first GACD(C)3ACD(C)3GHJ
+// second and final G(ACD(C)3)GHI
+console.log(input2.toString());
+console.log(condenseArray(input2));
