@@ -40,6 +40,7 @@ const getAdjSeq = (char, arr, i) => {
       startIndex: lastIndex,
       endIndex: i + gap - 1,
       repeat: 2,
+      gap,
     });
   }
   return undefined;
@@ -58,10 +59,10 @@ const getSequencesFromMemory = (memory) => Object.keys(memory).filter((char) => 
 // check if a given sequence is wrapping another sequence from the memory array. if so, it's invalid.
 // for example: ACCCBDACCCBD is wrapping CCC,
 // and therefore should be ignored now and condensed in the next recursion.
-const isWrappingSequence = (sequences, seq) => {
-  return !!sequences.find((s) => {
-    return seq.chars.toString().includes(Array.from(Array(s.repeat)).fill(s.chars).toString())
-  });
+const isWrappingSequence = (s, seq) => {
+  const smallSeqArr = [];
+  for(let i = 0; i < s.repeat; i++) smallSeqArr.push(...s.chars);
+  return !!seq.chars.toString().includes(smallSeqArr.toString());
 }
 
 const isShifted = (xStart, xLength, yStart, yLength) => (xStart >= yStart && xLength === yLength);
@@ -71,7 +72,7 @@ const skip = (sequences, seq, i) => {
   const sequencesWithoutSeq = sequences.slice();
   sequencesWithoutSeq.splice(i, 1);
   const res = sequencesWithoutSeq.find((s) => {
-      const isWrappingSeq = isWrappingSequence(sequencesWithoutSeq, seq);
+      const isWrappingSeq = isWrappingSequence(s, seq);
       const isSameButShifted = isShifted(seq.startIndex, seq.chars.length, s.startIndex, s.chars.length);
       return isWrappingSeq || isSameButShifted;
   });
@@ -80,9 +81,9 @@ const skip = (sequences, seq, i) => {
 
 // construct the new array with duplicate chars instead of found repeating chars
 const createCondensedArray = (charsArr, sequences) => {
+  // what if CCC is included in CCCCC?
   const newCharsArr = [...charsArr];
   sequences.forEach((seq, i) => {
-    console.log("skip?: "+skip(sequences, seq, i));
     if(!skip(sequences, seq, i)) {
       let gap = seq.endIndex - seq.startIndex;
       if(seq.startIndex === 0) gap ++;
@@ -94,15 +95,31 @@ const createCondensedArray = (charsArr, sequences) => {
   return newCharsArr;
 }
 
+// getting the seq list and the new seq object, using the gap and index properties to determine if the seq continues another seq,
+// if so, returns the matching seq from list.
+const getOngoingSeq = (seqList, newSeq, i) => {
+  if(!seqList) return;
+  const ongoing =  seqList.find((s) => {
+    const bool = newSeq.startIndex === s.endIndex;
+    console.log(`i: ${i}`);
+    console.log(`prev endIndex: ${s.endIndex}`);
+    console.log(`new startIndex: ${newSeq.startIndex}`);
+    console.log(`isOngoing? ${bool}`);
+    return bool;
+  });
+  return ongoing;
+}
+
 const condenseArray = (charsArr) => {
+  console.log("__________________________ITERATION__________________________");
     const memory = {};
     charsArr.forEach((char, i) => {
       const charObj = memory[char];
       if(charObj) {
         const seq = getAdjSeq(charObj, charsArr, i);
         if (seq) {
-          const dupSeq = charObj.sequences?.find((prevSeq) => prevSeq.chars.toString() === seq.chars.toString());
-          if (dupSeq) updateDupSeq(dupSeq, seq);
+          const ongoingSeq = getOngoingSeq(charObj.sequences, seq, i);
+          if (ongoingSeq) updateDupSeq(ongoingSeq, seq);
           else {
             if (!charObj.sequences) charObj.sequences = [];
             charObj.sequences.push(seq);
@@ -110,16 +127,25 @@ const condenseArray = (charsArr) => {
         }
         charObj.indexes.push(i);
       }
-      else memory[char] = { indexes: [i] };
+      else {
+        memory[char] = { indexes: [i] };
+      }
     });
     const sequences = getSequencesFromMemory(memory);
     if (!sequences.length) return charsArr.join(''); // if there are no new sequences, we are done
     return condenseArray(createCondensedArray(charsArr, sequences));
 }
 
-const input = 'CDABABABADCHJIKLMLMC'.split('');
+// const input = 'CDABABABADCHJIKLMLMC'.split('');
 const input2 = 'GACDCCCACDCCCGHJ'.split('');
+const input3 = 'GACDCjCjCjACDCjCjCjGHJ'.split('');
 // first GACD(C)3ACD(C)3GHJ
 // second and final G(ACD(C)3)GHI
 // console.log(input2.toString());
-console.log(condenseArray(input2));
+const run = (input) => {
+  console.log(input.toString());
+  input.forEach((char, i) => console.log(`${i} ${char}`));
+  const res = condenseArray(input);
+  console.log(res);
+}
+run(input2);
