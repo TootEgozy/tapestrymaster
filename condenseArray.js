@@ -15,17 +15,21 @@
 // call this function again recursively, providing the result array. notice that this might work for repeating characters too.
 // if at the end of the loop, there are no sequences in the memory, it means that we are done. return the array.
 
-const charObj = {
-  ["char"]: {
-    indexes: [0, 3, 6],
-    sequences: [{
-      chars: ["A", "B", "C"],
-      startIndex: 0,
-      endIndex: 6,
-      repeat: 2
-    }],
-  }
-}
+// type sequenceObj = {
+//   chars: string[]
+//   startIndex: number
+//   endIndex: number
+//   repeat: number
+// }
+//
+// type charObj = {
+//     indexes?: number[],
+//     sequences?: sequenceObj[]
+// }
+//
+// type Memory = {
+//   [char: string]: charObj
+// }
 
 // receives the char object, the array and current index.
 // check to see if there are adjacent matching sequences, if so, returns the new seq obj. if not, returns undefined.
@@ -53,40 +57,71 @@ const updateDupSeq = (dupSeq, seq) => {
 }
 
 // creates an array of all sequences
-const getSequencesFromMemory = (memory) => Object.keys(memory).filter((char) => memory[char].sequences).map((char) => memory[char].sequences).flat();
+const getSequencesFromMemory = (memory) => {
+  return Object.keys(memory)
+               .filter((char) => memory[char].sequences)
+               .map((char) => memory[char].sequences)
+              // @ts-ignore
+               .flat();
+}
 
-const isSegment = (s, smallSeqArr) => {
-  let isSeq = true;
-  for(let i = 0; i < s.length; i += smallSeqArr.length) {
-    const segment = s.slice(i, i + smallSeqArr.length - 1);
-    if(segment.toString() !== smallSeqArr.toString()) isSeq = false;
+// is [ABC] a segment of [ABCABCABC]? yes
+// is it a segment of [ABCABCA]? no.
+//
+const isSegment = (testedSeq, someSeqChars) => {
+  if((testedSeq.length % someSeqChars.length) !== 0) return false;
+  for(let i = 0; i < testedSeq.length - someSeqChars.length - 1; i+= someSeqChars.length) {
+    const slice = testedSeq.slice(i, i+someSeqChars.length);
+    if(slice.toString() !== someSeqChars.toString()) return false;
   }
-  return isSeq;
+  return true;
 }
 // check if a given sequence is wrapping another sequence from the memory array. if so, it's invalid.
 // for example: ACCCBDACCCBD is wrapping CCC,
 // and therefore should be ignored now and condensed in the next recursion.
-// ----------------------
-// A problem: CC is wrapped in CCC, but in that case I want to choose the longer form.
-// it's the same for ABABABAB, I want the whole seq and not just AB2.
-// how can I differentiate between case ACCCBDACCCBD and case CCCC when my seq char is C?
-// I need to use a for loop that jumps over (i += smallSeqArr.length) and find a segment that isn't equal, if I don't find one, it's not wrapping
-const isWrappingSequence = (s, seq) => {
-  const smallSeqArr = [];
-  for(let i = 0; i < s.repeat; i++) smallSeqArr.push(...s.chars);
-  if(isSegment(s, seq.chars)) return false;
-  return !!seq.chars.toString().includes(smallSeqArr.toString());
+// if the wrapped seq is a segment of the larger seq (like CCC in CCCCC) CCCCC not wrapping.
+const isWrappingSequence = (testedSeq, someSeq) => {
+  if(testedSeq.length <= someSeq.length) return false;
+  const someSeqChars = [];
+  for(let i = 0; i < someSeq.repeat; i++) someSeqChars.push(...someSeq.chars);
+  const isWrappedSeqASegment = isSegment(testedSeq.chars, someSeqChars);
+  if(isWrappedSeqASegment) {
+    return false;
+  }
+  return !!testedSeq.chars.toString().includes(someSeqChars.toString());
 }
+
+// const tester = { chars: ["C"], repeat: 3 };
+// const wrappingSeq = { chars:  ["C", "C", "C", "A", "B"] };
+// const notWrappingSeq = { chars:  ["C"], repeat: 6 };
+// [wrappingSeq, notWrappingSeq].forEach((seq) => console.log(isWrappingSequence(seq, tester))); // true false
+// const seq = {
+//   "chars": ["A", "C", "D", "C", "C", "C"],
+//   "startIndex": 1,
+//   "endIndex": 12,
+//   "repeat": 2,
+//   "gap": 6
+// }
+// const someSeq = {
+//   "chars": ["C"],
+//   "startIndex": 10,
+//   "endIndex": 12,
+//   "repeat": 3,
+//   "gap": 1
+// }
+//
+// console.log("sequence: "+JSON.stringify(seq));
+// console.log("is wrapped in seq?: "+JSON.stringify(someSeq));
+// console.log(isWrappingSequence(seq, someSeq));
+
 // checks if 2 seq are the same but shifted. for example,
 // the arr [A, B, A, B, A] can be reduced to [{A, B}2, A] but also to [A, {B, A}2]
 // we need to pick one form to avoid duplications, so the first is favored.
 const isShifted = (xStart, xLength, yStart, yLength) => (xStart >= yStart && xLength === yLength);
 
 // skip this sequence if it's the same but shifted, or if it's wrapping a nested sequence.
-const skip = (sequences, seq, i) => {
-  const sequencesWithoutSeq = sequences.slice();
-  sequencesWithoutSeq.splice(i, 1);
-  const res = sequencesWithoutSeq.find((s) => {
+const skip = (sequences, seq) => {
+  const res = sequences.find((s) => {
       const isWrappingSeq = isWrappingSequence(s, seq);
       const isSameButShifted = isShifted(seq.startIndex, seq.chars.length, s.startIndex, s.chars.length);
       return isWrappingSeq || isSameButShifted;
@@ -94,67 +129,81 @@ const skip = (sequences, seq, i) => {
   return !!res;
 };
 
+const filterSequences = (sequences) => {
+  const filtered = sequences.filter((s, i, allSequences) => {
+    const sequencesWithoutSeq = allSequences.slice();
+    sequencesWithoutSeq.splice(i, 1);
+    return !!skip(sequencesWithoutSeq, s); // skip or not
+  });
+  return filtered;
+}
+
 // construct the new array with duplicate chars instead of found repeating chars
-const createCondensedArray = (charsArr, sequences) => {
-  // what if CCC is included in CCCCC?
+const createCondensedArray = (charsArr, sequencesFromMemory) => {
   const newCharsArr = [...charsArr];
-  sequences.forEach((seq, i) => {
-    if(!skip(sequences, seq, i)) {
+  const filteredSequences = filterSequences(sequencesFromMemory);
+  let removedCounter = 0;
+
+  filteredSequences.forEach((seq) => {
       let gap = seq.endIndex - seq.startIndex;
       if(seq.startIndex === 0) gap ++;
       const strSeq = seq.chars.toString();
       const template = `(${strSeq})${seq.repeat}`;
-      newCharsArr.splice(seq.startIndex, gap + 1, template);
-    }
+      const removed = newCharsArr.splice(seq.startIndex - removedCounter, gap + 1, template);
+      removedCounter += removed.length - 1;
   });
   return newCharsArr;
 }
 
 // getting the seq list and the new seq object, using the gap and index properties to determine if the seq continues another seq,
 // if so, returns the matching seq from list.
-const getOngoingSeq = (seqList, newSeq, i) => {
+const getOngoingSeq = (seqList, newSeq) => {
   if(!seqList) return;
-  const ongoing =  seqList.find((s) => {
-    const bool = newSeq.startIndex === s.endIndex;
-    return bool;
+  const ongoing = seqList.find((s) => newSeq.startIndex === s.endIndex);
+  return ongoing;
+}
+
+const constructMemory = (charsArr) => {
+  const memory = {};
+  charsArr.forEach((char, i) => {
+    const charObj = memory[char];
+    if(charObj) {
+      const seq = getAdjSeq(charObj, charsArr, i);
+      if (seq) {
+        const ongoingSeq = getOngoingSeq(charObj.sequences, seq);
+        if (ongoingSeq) {
+          updateDupSeq(ongoingSeq, seq);
+        }
+        else {
+          if (!charObj.sequences) charObj.sequences = [];
+          charObj.sequences.push(seq);
+        }
+      }
+      charObj.indexes.push(i);
+    }
+    else {
+      memory[char] = { indexes: [i] };
+    }
   });
-  return !!ongoing;
+  return memory;
 }
 
 const condenseArray = (charsArr) => {
-    const memory = {};
-    charsArr.forEach((char, i) => {
-      const charObj = memory[char];
-      if(charObj) {
-        const seq = getAdjSeq(charObj, charsArr, i);
-        if (seq) {
-          const ongoingSeq = getOngoingSeq(charObj.sequences, seq, i);
-          if (ongoingSeq) updateDupSeq(ongoingSeq, seq);
-          else {
-            if (!charObj.sequences) charObj.sequences = [];
-            charObj.sequences.push(seq);
-          }
-        }
-        charObj.indexes.push(i);
-      }
-      else {
-        memory[char] = { indexes: [i] };
-      }
-    });
+    const memory = constructMemory(charsArr);
     const sequences = getSequencesFromMemory(memory);
     if (!sequences.length) return charsArr.join(''); // if there are no new sequences, we are done
-    return condenseArray(createCondensedArray(charsArr, sequences));
+    const condensed =  createCondensedArray(charsArr, sequences);
+    console.log(condensed.toString());
+    return condenseArray(condensed);
 }
 
-// const input = 'CDABABABADCHJIKLMLMC'.split('');
+const input = 'CDABABABADCHJIKLMLMC'.split('');
 const input2 = 'GACDCCCACDCCCGHJ'.split('');
 const input3 = 'GACDCjCjCjACDCjCjCjGHJ'.split('');
-// first GACD(C)3ACD(C)3GHJ
-// second and final G(ACD(C)3)GHI
-// console.log(input2.toString());
+const input4 = 'ACCCCCDJHGFJHGFK'.split('');
 const run = (input) => {
   console.log(input.toString());
-  input.forEach((char, i) => console.log(`${i} ${char}`));
+  // input.forEach((char, i) => console.log(`${i} ${char}`));
   const res = condenseArray(input);
   console.log(res);
 }
