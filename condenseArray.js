@@ -55,16 +55,31 @@ const updateDupSeq = (dupSeq, seq) => {
 // creates an array of all sequences
 const getSequencesFromMemory = (memory) => Object.keys(memory).filter((char) => memory[char].sequences).map((char) => memory[char].sequences).flat();
 
-
+const isSegment = (s, smallSeqArr) => {
+  let isSeq = true;
+  for(let i = 0; i < s.length; i += smallSeqArr.length) {
+    const segment = s.slice(i, i + smallSeqArr.length - 1);
+    if(segment.toString() !== smallSeqArr.toString()) isSeq = false;
+  }
+  return isSeq;
+}
 // check if a given sequence is wrapping another sequence from the memory array. if so, it's invalid.
 // for example: ACCCBDACCCBD is wrapping CCC,
 // and therefore should be ignored now and condensed in the next recursion.
+// ----------------------
+// A problem: CC is wrapped in CCC, but in that case I want to choose the longer form.
+// it's the same for ABABABAB, I want the whole seq and not just AB2.
+// how can I differentiate between case ACCCBDACCCBD and case CCCC when my seq char is C?
+// I need to use a for loop that jumps over (i += smallSeqArr.length) and find a segment that isn't equal, if I don't find one, it's not wrapping
 const isWrappingSequence = (s, seq) => {
   const smallSeqArr = [];
   for(let i = 0; i < s.repeat; i++) smallSeqArr.push(...s.chars);
+  if(isSegment(s, seq.chars)) return false;
   return !!seq.chars.toString().includes(smallSeqArr.toString());
 }
-
+// checks if 2 seq are the same but shifted. for example,
+// the arr [A, B, A, B, A] can be reduced to [{A, B}2, A] but also to [A, {B, A}2]
+// we need to pick one form to avoid duplications, so the first is favored.
 const isShifted = (xStart, xLength, yStart, yLength) => (xStart >= yStart && xLength === yLength);
 
 // skip this sequence if it's the same but shifted, or if it's wrapping a nested sequence.
@@ -101,17 +116,12 @@ const getOngoingSeq = (seqList, newSeq, i) => {
   if(!seqList) return;
   const ongoing =  seqList.find((s) => {
     const bool = newSeq.startIndex === s.endIndex;
-    console.log(`i: ${i}`);
-    console.log(`prev endIndex: ${s.endIndex}`);
-    console.log(`new startIndex: ${newSeq.startIndex}`);
-    console.log(`isOngoing? ${bool}`);
     return bool;
   });
-  return ongoing;
+  return !!ongoing;
 }
 
 const condenseArray = (charsArr) => {
-  console.log("__________________________ITERATION__________________________");
     const memory = {};
     charsArr.forEach((char, i) => {
       const charObj = memory[char];
@@ -149,3 +159,4 @@ const run = (input) => {
   console.log(res);
 }
 run(input2);
+
