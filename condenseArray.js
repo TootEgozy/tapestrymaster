@@ -117,23 +117,32 @@ const isWrappingSequence = (testedSeq, someSeq) => {
 // checks if 2 seq are the same but shifted. for example,
 // the arr [A, B, A, B, A] can be reduced to [{A, B}2, A] but also to [A, {B, A}2]
 // we need to pick one form to avoid duplications, so the first is favored.
-const isShifted = (xStart, xLength, yStart, yLength) => (xStart >= yStart && xLength === yLength);
+// TODO: this disqualified
+const isShifted = (testedSeq, otherSeq) => {
+  return (
+      otherSeq.startIndex >= testedSeq.startIndex && otherSeq.startIndex <= testedSeq.endIndex
+      && testedSeq.endIndex >= otherSeq.startIndex && testedSeq.endIndex <= otherSeq.startIndex
+  )
+  // (xStart >= yStart && xLength === yLength);
+}
 
 // skip this sequence if it's the same but shifted, or if it's wrapping a nested sequence.
 const skip = (sequences, seq) => {
   const res = sequences.find((s) => {
-      const isWrappingSeq = isWrappingSequence(s, seq);
-      const isSameButShifted = isShifted(seq.startIndex, seq.chars.length, s.startIndex, s.chars.length);
-      return isWrappingSeq || isSameButShifted;
+    const isWrappingSeq = isWrappingSequence(s, seq);
+    // const isSameButShifted = isShifted(seq.startIndex, seq.chars.length, s.startIndex, s.chars.length);
+    const isSameButShifted = isShifted(seq, s);
+    return isWrappingSeq || isSameButShifted;
   });
   return !!res;
 };
 
 const filterSequences = (sequences) => {
+  if(sequences.length === 1) return sequences;
   const filtered = sequences.filter((s, i, allSequences) => {
     const sequencesWithoutSeq = allSequences.slice();
     sequencesWithoutSeq.splice(i, 1);
-    return !!skip(sequencesWithoutSeq, s); // skip or not
+    return !skip(sequencesWithoutSeq, s); // skip or not
   });
   return filtered;
 }
@@ -159,9 +168,25 @@ const createCondensedArray = (charsArr, sequencesFromMemory) => {
 // if so, returns the matching seq from list.
 const getOngoingSeq = (seqList, newSeq) => {
   if(!seqList) return;
-  const ongoing = seqList.find((s) => newSeq.startIndex === s.endIndex);
+  const ongoing = seqList.find((s) => newSeq.startIndex === s.endIndex || newSeq.endIndex - newSeq.gap === s.endIndex);
   return ongoing;
 }
+// const seqList = [{
+//   chars: ["C"],
+//   startIndex: 0,
+//   endIndex: 2,
+//   repeat: 2,
+//   gap: 1
+// }];
+// const newSeq = [{
+//   chars: ["C"],
+//   startIndex: 1,
+//   endIndex: 3,
+//   repeat: 2,
+//   gap: 1
+// }];
+//
+// console.log(getOngoingSeq(seqList, newSeq));
 
 const constructMemory = (charsArr) => {
   const memory = {};
@@ -195,17 +220,22 @@ const condenseArray = (charsArr) => {
     const condensed =  createCondensedArray(charsArr, sequences);
     console.log(condensed.toString());
     return condenseArray(condensed);
-}
+} // Add a max repeat = length of charArr so if we have an error it wont cause stack overflow
 
-const input = 'CDABABABADCHJIKLMLMC'.split('');
-const input2 = 'GACDCCCACDCCCGHJ'.split('');
-const input3 = 'GACDCjCjCjACDCjCjCjGHJ'.split('');
-const input4 = 'ACCCCCDJHGFJHGFK'.split('');
+const input1 = 'GACDCCCACDCCCGHJ'.split('');
+const input2 = 'ABABABA'.split('');
+const input3 = 'SAGGGGGAS'.split('');
+const input4 = 'ABABABVFABABABGVF'.split('');
+const input5 = 'AB'.split('');
+const input6 = 'CCCCCCCCAAACCCCCC'.split('');
+const input7 = 'GACDCCCACDCCCGHJ'.split('');
+const input8 = 'GACDCCCACDCCCGHJ'.split('');
+const input9 = 'GACDCCCACDCCCGHJ'.split('');
 const run = (input) => {
   console.log(input.toString());
   // input.forEach((char, i) => console.log(`${i} ${char}`));
   const res = condenseArray(input);
   console.log(res);
 }
-run(input2);
+run(input6);
 
