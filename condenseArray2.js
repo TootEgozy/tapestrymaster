@@ -12,7 +12,7 @@
 // at the end of the loop, check if any sequences found? if so, call the function again with charsArr.
 // if not, return charsArr.
 
-const isSequence = (arr, charLastIndex, i) => {
+const findSequence = (arr, charLastIndex, i) => {
     const gap = i - charLastIndex;
     const firstSeq = arr.slice(charLastIndex, i);
     const secondSeq = arr.slice(i, i + gap);
@@ -23,16 +23,42 @@ const isSequence = (arr, charLastIndex, i) => {
     });
 }
 
-const createTemplate = (seq, repeat) =>  `${seq}${repeat}`;
+const createTemplate = (seq, repeat) =>  `(${seq})${repeat}`;
 
 // define a repeat counter = 1; and a lastIndex prop
 // create a for loop which iterates over arr in jumps of gap.
 // if there is a match in the seq, add 1 to the repeat counter
 // if there is a mismatch: create a template, return seq lastindex and template
-const getSequenceData = (arr, charLastIndex, gap) => {
-
+const getSequenceData = (arr, seq, seqPrevIndex, gap) => {
+    const seqData = {
+        repeats: 1,
+        lastIndex: seqPrevIndex + gap,
+    };
+    for(let i = seqPrevIndex + gap; i < arr.length; i += gap) {
+        const chars = arr.slice(seqData.lastIndex, i + gap);
+        if(chars.toString() === seq) {
+            seqData.repeats = seqData.repeats + 1;
+            seqData.lastIndex = seqData.lastIndex + gap;
+        }
+        if(!arr[i + gap]) return ({
+            template: createTemplate(seq, seqData.repeats),
+            lastIndex: seqData.lastIndex,
+        })
+    }
+    return ({
+        template: createTemplate(seq, seqData.repeats),
+        lastIndex: seqData.lastIndex,
+    })
 }
-
+// const arr = "GHABCDBCDBCDBCDF".split("");
+// const seq = "B,C,D";
+// const arr = "CCC".split("");
+// const seq = "C";
+// const arr = "DDDDDDJJKK".split("");
+// const seq = "D";
+// const seqLastIndex = 0;
+// const gap = 1;
+// console.log(getSequenceData(arr, seq, seqLastIndex, gap));
 
 const condenseArray = (charsArray) => {
     let sequencesFound = false;
@@ -41,9 +67,9 @@ const condenseArray = (charsArray) => {
     for(let i = 0; i < charsArr; i++) {
         const char = charsArr[i];
         if(memory[char]) {
-            const isSequence = isSequence(memory[char], charsArr, i);
-            if(isSequence) {
-                const sequenceData = 'getSequenceData'; //template, repeats, last index
+            const [seq, gap] = findSequence(memory[char], charsArr, i);
+            if(seq) {
+                const sequenceData = getSequenceData(charsArr, seq, memory[char], gap); //template, repeats, last index
                 charsArr.splice(memory[char], sequenceData.lastIndex, sequenceData.template);
                 sequencesFound = true;
                 memory = {};
@@ -53,8 +79,10 @@ const condenseArray = (charsArray) => {
         } else {
             memory[char] = i;
         }
+        return charsArr;
     }
 }
+console.log(condenseArray("AAACCCAC".split("")));
 
 const createInstructions = (charsArr) => {
     const instructions = []
