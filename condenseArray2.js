@@ -64,8 +64,7 @@ const condenseArray = (charsArray) => {
     let sequencesFound = false;
     let memory = {};
     let charsArr = charsArray.slice();
-    for(let i = 0; i < charsArr; i++) {
-        const char = charsArr[i];
+    charsArr.forEach((char, i) => {
         if(memory[char]) {
             const [seq, gap] = findSequence(memory[char], charsArr, i);
             if(seq) {
@@ -79,8 +78,8 @@ const condenseArray = (charsArray) => {
         } else {
             memory[char] = i;
         }
-        return charsArr;
-    }
+    });
+    return charsArr;
 }
 console.log(condenseArray("AAACCCAC".split("")));
 
