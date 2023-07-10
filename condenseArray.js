@@ -31,6 +31,8 @@
 //   [char: string]: charObj
 // }
 
+
+
 // receives the char object, the array and current index.
 // check to see if there are adjacent matching sequences, if so, returns the new seq obj. if not, returns undefined.
 const getAdjSeq = (char, arr, i) => {
