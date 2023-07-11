@@ -47,11 +47,6 @@ const getSequenceData = (arr, seq, seqPrevIndex, gap) => {
             })
         }
     }
-        // if(!arr[i + gap]) return ({
-        //     template: createTemplate(seq, seqData.repeats),
-        //     lastIndex: seqData.lastIndex,
-        // })
-
     return ({
         template: createTemplate(seq, seqData.repeats),
         lastIndex: seqData.lastIndex,
@@ -76,22 +71,22 @@ const condenseArray = (charsArray) => {
         if(`${char}` in memory) {
             const data = findSequence(charsArr, memory[char], i)
             if(data) {
-                const sequenceData = getSequenceData(charsArr, data.seq, memory[char], data.gap); //template, repeats, last index
-                charsArr.splice(memory[char], sequenceData.lastIndex, sequenceData.template);
+                const sequenceData = getSequenceData(charsArr, data.seq, memory[char], data.gap);
+                const endSlice = memory[char] === 0 ? sequenceData.lastIndex: sequenceData.lastIndex - 1;
+                charsArr.splice(memory[char], endSlice, sequenceData.template);
                 sequencesFound = true;
                 i = memory[char];
                 memory = {};
+            } else {
+                memory[char] = i;
             }
-            // if not, update memory:
-            memory[char] = i;
         } else {
             memory[char] = i;
         }
     }
     return charsArr;
 }
-console.log("hi");
-console.log(condenseArray("AAACCCAC".split("")));
+console.log(condenseArray("CCABCABC".split("")));
 
 const createInstructions = (charsArr) => {
     const instructions = []
