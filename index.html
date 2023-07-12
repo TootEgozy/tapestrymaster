@@ -37,6 +37,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tapestry Master</title>
+        <script type="text/javascript" src="condenseArray2.js"></script>
     </head>
     <body>
         <div id="columns-rows-input">
@@ -50,30 +51,6 @@
         <button onCLick="createPattern()">Create pattern</button>
     </body>
     <script>
-        const sumRepeatingChars = (arr) => {
-            const result = [];
-            let memory = {};
-            arr.forEach((c) => {
-                if (memory[c]) memory[c] = memory[c]++; // {A: 2}
-                else {
-                    Object.keys(memory).forEach((char) => result.push(`(${char})${memory[char]}`));
-                    memory = {[c]: 1}
-                }
-            })
-            const lastChar = Object.keys(memory);
-            if (lastChar.length) result.push(lastChar[0]);
-            return result;
-        }
-
-        const condenseArray = (arr) => {
-            // [A, A, B, A, A, B]
-            // [[A, A], B, [A, A], B]
-            // [[[A, A], B], [[A, A], B]]]
-            // {(A)2, (B)1}2
-
-            console.log(sumRepeatingChars('AABAAAAABABBB'.split('')));
-        }
-        // ----------------------------------------------------
         const colorA = "blue";
         const colorB = "orange";
         const toggleColor = (event) => {
@@ -93,6 +70,7 @@
             for(let i = 0; i < rows; i++) {
                 const row = table.insertRow();
                 row["order"] = rows-i;
+                row["side"] = (rows - i) % 2 === 0 ? "WS" : "RS";
                 for(let j = 0; j < cols; j++) {
                     const cell = row.insertCell();
                     cell.className = "cell";
@@ -109,20 +87,33 @@
             const table = document.querySelector("table");
             Array.from(table.rows).reverse().forEach((tr) => {
                     const cells = Array.from(tr.cells).map((cell) => cell["data-color"]);
-                    tableData[tr.order] = tr.order % 2 === 0 ? cells.reverse() : cells;
+                    tableData[tr.order] = {
+                        cells: tr.order % 2 === 0 ? cells : cells.reverse(),
+                        side: tr.side,
+                    }
                 });
+            console.log(tableData);
             return tableData;
         }
-        // write a recursive function that receives an array and condense the items:
-        // [A, B, B, A, B, A, B, A, B] => [(A)1, (B)2, A(1), {(B)1, A(1)}2, (B)1 ]
-        // [A, B, B, A, B, B,]
         const createPattern = () => {
             const tableData = readTable();
-            condenseArray([]);
-            // for (const key in tableData) {
-            //     console.log(tableData[key]);
-            // }
-            // array1.length === array2.length && array1.every((value, index) => value === array2[index])
+            const instructionsDiv = document.createElement("div");
+            instructionsDiv.className = "instructions-div";
+            document.querySelector('body').appendChild(instructionsDiv);
+
+            Object.keys(tableData).forEach((rowNumber) => {
+                const row = tableData[rowNumber];
+                const paragraph = document.createElement('p');
+                instructionsDiv.appendChild(paragraph);
+                if(Number(rowNumber) === 0) {
+                    paragraph.innerHTML = `row ${rowNumber} : ${row.toString()}`;
+                } else {
+                    console.log('row.cells:');
+                    console.log(row.cells);
+                    const condensedRow = condenseArray(row.cells);
+                    paragraph.innerHTML = `row ${rowNumber} [${row.side}]: ${condensedRow.toString()}`;
+                }
+            });
         }
     </script>
 </html>

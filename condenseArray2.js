@@ -87,18 +87,12 @@ const condenseArray = (charsArray) => {
     return charsArr;
 }
 
-const createInstructions = (charsArr) => {
-    const instructions = []
-    return instructions;
-}
-
-console.log(condenseArray("AAACCCACBAAACCCACBAAGAAG".split("")));
-// ABC(D)2F(D)2GABC(D)2F(D)2G(DS)3(S)4(F)2
-// (ABC(D)2F(D)2G)2(DS)3(S)4(F)2
-
-const inputsOutputsForFlow = [
-    ["AAACCCAC", "(A)3,(C)3AC"],
-    ["ABCABCABC", "(ABC)3"],
-    ["CABCABCABC", "(CAB)3C"],
-    ["CCABCABC", "(C)2(ABC)2"]
-];
+module.exports = { condenseArray };
+// console.log(condenseArray("AAACCCACBAAACCCACBAAGAAG".split("")));
+//
+// const inputsOutputsForFlow = [
+//     ["AAACCCAC", "(A)3,(C)3AC"],
+//     ["ABCABCABC", "(ABC)3"],
+//     ["CABCABCABC", "(CAB)3C"],
+//     ["CCABCABC", "(C)2(ABC)2"]
+// ];
