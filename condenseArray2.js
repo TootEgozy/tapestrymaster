@@ -21,7 +21,7 @@ const findSequence = (arr, charLastIndex, i) => {
         seq: firstSeq.toString(),
         gap,
     });
-    else return {};
+    else return undefined;
 }
 
 const createTemplate = (seq, repeat) =>  `(${seq})${repeat}`;
@@ -83,14 +83,18 @@ const condenseArray = (charsArray) => {
             memory[char] = i;
         }
     }
+    if(sequencesFound) return condenseArray(charsArr);
     return charsArr;
 }
-console.log(condenseArray("DCCCDCCC".split("")));
 
 const createInstructions = (charsArr) => {
     const instructions = []
     return instructions;
 }
+
+console.log(condenseArray("AAACCCACBAAACCCACBAAGAAG".split("")));
+// ABC(D)2F(D)2GABC(D)2F(D)2G(DS)3(S)4(F)2
+// (ABC(D)2F(D)2G)2(DS)3(S)4(F)2
 
 const inputsOutputsForFlow = [
     ["AAACCCAC", "(A)3,(C)3AC"],
