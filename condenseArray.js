@@ -50,7 +50,7 @@ const getSequenceData = (arr, seq, seqPrevIndex, gap) => {
 // at the end of the loop, if any sequence is found, the function calls itself with the new array to further condense it.
 // for example, ["A","(C)2","B","A","(C)2","B"] can still be condensed to "(A (C)2 B)2".
 // if no new sequences found, the result array is returned.
-const condenseArray = (charsArray) => {
+const condenseArray = (charsArray) => { // convert to a while loop
     let sequencesFound =  false;
     let memory = {};
     let charsArr = charsArray.slice();
