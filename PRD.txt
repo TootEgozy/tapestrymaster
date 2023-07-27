@@ -1,0 +1,46 @@
+Phase 1:
+create a basic implementation of the idea.
+1. create a basic grid / table that the user can add rows / columns to.
+2. allow the user to toggle each div / cell to black or white colors (color A or B) by clicking it.
+3. implement the algorithm which converts the grid to the output:
+    a. start from bottom of the grid and in reverse direction, read the row. in the end of the row,
+       go up and read the next row.
+    b. for each row, set a key in an object (row number) and the value is the row stitches data.
+       compress consecutive stitches as so: sc(A), sc(A) => 2sc(A).
+    c. find the best way to compress all consecutive stitches. remember the scoping riddle.
+    d. print the instructions for the user.
+
+Phase 2:
+improve the sketch.
+1. go over the code and delete unneeded functions and comments, add better comments.
+2. change variable names to be more readable.
+3. move functions into the JS file.
+4. constant table container size.
+5. allow user to draw by dragging the mouse.
+
+Phase 3:
+vuex.
+1. pick a vuex class and study.
+2. design a basic structure to app.
+3. consult about the structure and improve it.
+4. create the sketch app in vuex.
+
+Future features:
+1. allow multiple color selection.
+2. allow the user to draw by dragging the mouse and by selecting an area to color at once.
+3. create random patterns (this can be a whole new algorithm and cool feature - maybe use an AI or other API).
+4. allow the user to print the instructions.
+5. create a graphical pattern.
+6. allow the user to upload an image and convert it to pixels, limit the colors and to the instructions.
+7. upload the code to netlify or another server.
+8. offer search of patters - ask the user if they agree to share the pattern. save it to the DB with tags,
+   and allow users to search the tags.
+9. allow connection with password to see your own patterns.
+10. display complexity level based on size and color changes.
+11. add animations.
+12. offer an instructions section where there is a basic explanation on how to tapestry crochet, with a demonstrating video.
+13. add an about page with the offer to buy me coffee.
+14. add a color selector which allows the user to select a color from an image.
+15. add the "I'm looking for inspiration" and "I'm looking for a challenge" tags which
+    will offer ideas for projects (see if ravlery has an API)
+16. allow the user to insert string measurements and display the estimated final project size.
