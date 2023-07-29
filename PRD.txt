@@ -25,6 +25,14 @@ vuex.
 3. consult about the structure and improve it.
 4. create the sketch app in vuex.
 
+Phase 3 deconstruct:
+* write the vuex router and homepage elements
+* see that it reaches the store
+* create a separate component for the table
+* make sure that it gets the data and generates a grid
+* create the instructions component
+* pass the data to the instructions to create the instructions.
+
 Future features:
 1. allow multiple color selection.
 2. allow the user to draw by dragging the mouse and by selecting an area to color at once.
