@@ -83,7 +83,7 @@
         }
         // read table from the bottom up, extract cell color, reverse each second row to form a continuous pattern
         const readTable = () => {
-            const tableData = { 0: ["ch", Number(rowsElement.value) + 1]};
+            const tableData = { 0: ["ch", Number(columnsElement.value) + 1]};
             const table = document.querySelector("table");
             Array.from(table.rows).reverse().forEach((tr) => {
                     const cells = Array.from(tr.cells).map((cell) => cell["data-color"]);
