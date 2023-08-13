@@ -13,13 +13,12 @@
       </div>
     </div>
     <div id="table-container">
-      <DrawingTable rows=rowsNumber columns=7 />
+      <DrawingTable :rows="this.rowsNumber" :columns="this.columnsNumber" />
     </div>
   </div>
 </template>
 
 <script>
-
 import DrawingTable from "@/components/DrawingTable.vue";
 
 export default {
