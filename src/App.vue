@@ -12,11 +12,16 @@
         <button @click="this.generateTable()">Generate</button>
       </div>
     </div>
-    <div id="table-container"></div>
+    <div id="table-container">
+      <DrawingTable />
+    </div>
   </div>
 </template>
 
 <script>
+
+import DrawingTable from "@/components/DrawingTable.vue";
+
 export default {
   name: "App",
   data() {
@@ -64,6 +69,9 @@ export default {
       container.appendChild(table);
     },
   },
+  components: {
+    DrawingTable,
+  }
 };
 </script>
 
