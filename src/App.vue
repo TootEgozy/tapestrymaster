@@ -13,7 +13,7 @@
       </div>
     </div>
     <div id="table-container">
-      <DrawingTable />
+      <DrawingTable rows=rowsNumber columns=7 />
     </div>
   </div>
 </template>
@@ -26,8 +26,8 @@ export default {
   name: "App",
   data() {
     return {
-      rowsNumber: undefined,
-      columnsNumber: undefined,
+      rowsNumber: 6,
+      columnsNumber: 7,
       generated: false,
       colors: [],
       colorA: "blue",

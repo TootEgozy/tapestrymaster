@@ -8,8 +8,13 @@ import { h } from "vue";
 
   export default {
     name: 'DrawingTable',
-    render() {
-      return h('div', { class: 'bar', innerHTML: 'hello' });
+    props: {
+      rows: Number,
+      columns: Number,
+    },
+    render(): any {
+      console.log(this);
+      return h('div', { class: 'bar', innerHTML:`rows: ${this.rows}, columns: ${this.columns}` });
     }
   }
 </script>
