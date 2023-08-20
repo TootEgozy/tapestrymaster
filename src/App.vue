@@ -9,11 +9,11 @@
         <input type="number" min="0" id="rows" v-model="rowsNumber" />
         <label for="columns">columns:</label>
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
-        <button @click="this.generateTable()">Generate</button>
+        <button @click="generateTable">Generate</button>
       </div>
     </div>
     <div id="table-container">
-      <DrawingTable :rows="this.rowsNumber" :columns="this.columnsNumber" />
+      <DrawingTable :rows="rowsNumber" :columns="columnsNumber" />
     </div>
   </div>
 </template>
