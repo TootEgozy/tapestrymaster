@@ -5,10 +5,10 @@
         Insert the desired work measurements (rows, columns) and press generate
       </p>
       <div id="columns-rows-input">
-        <label for="columns">columns:</label>
-        <input type="number" min="0" id="columns" />
         <label for="rows">rows:</label>
-        <input type="number" min="0" id="rows" />
+        <input type="number" min="0" id="rows" v-model="rowsNumber" />
+        <label for="columns">columns:</label>
+        <input type="number" min="0" id="columns" v-model="columnsNumber"/>
         <button @click="this.generateTable()">Generate</button>
       </div>
     </div>
@@ -25,8 +25,8 @@ export default {
   name: "App",
   data() {
     return {
-      rowsNumber: 6,
-      columnsNumber: 7,
+      rowsNumber: 0,
+      columnsNumber: 0,
       generated: false,
       colors: [],
       colorA: "blue",
