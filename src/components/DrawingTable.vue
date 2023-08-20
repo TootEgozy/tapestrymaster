@@ -1,7 +1,7 @@
 <template>
   <table>
-    <tr v-for="(row, i) in rowsArr" :key="i">
-      <td v-for="(column, i) in columnsArr" :key="i">
+    <tr v-for="(row, i) in createArray(rows)" :key="i">
+      <td v-for="(column, i) in createArray(columns)" :key="i">
         ^_^
       </td>
     </tr>
@@ -9,15 +9,27 @@
 </template>
 
 <script>
+
 export default {
   name: 'DrawingTable',
   props: ['rows', 'columns'],
   data() {
     return {
-      rowsArr: Array.from(Array(this.rows).keys()),
-      columnsArr: Array.from(Array(this.columns).keys())
+
     }
   },
+  watch: {
+    rows: 'regenerateTable',
+    columns: 'regenerateTable'
+  },
+  methods: {
+    createArray (length) {
+      return Array.from(Array(length).keys());
+    },
+    regenerateTable() {
+      // The table will be regenerated with updated rows and columns
+    }
+  }
 }
 </script>
 
