@@ -1,21 +1,24 @@
 <template>
-  <table>
-    <tr v-for="(row, i) in createArray(rows)" :key="i">
-      <td v-for="(column, i) in createArray(columns)" :key="i">
-        ^_^
-      </td>
-    </tr>
-  </table>
+  <div class="table-container">
+
+    <table>
+      <tr v-for="(row) in createArray(rows)" :key="row">
+        <TableCell v-for="(column) in createArray(columns)" :key="column" :colors="colors" />
+      </tr>
+    </table>
+
+  </div>
 </template>
 
 <script>
 
+import TableCell from "@/components/TableCell.vue";
+
 export default {
   name: 'DrawingTable',
-  props: ['rows', 'columns'],
+  props: ['rows', 'columns', 'colors'],
   data() {
     return {
-
     }
   },
   watch: {
@@ -27,17 +30,38 @@ export default {
       return Array.from(Array(length).keys());
     },
     regenerateTable() {
-      // The table will be regenerated with updated rows and columns
+      // force vue to regenerate the table
     }
+  },
+  components: {
+    TableCell,
   }
 }
 </script>
 
 <style lang="scss">
-table {
-  border-collapse: collapse;
+
+/* TODO: make the td a fixed square (in relation to width or length or whatever) and the table width and height dynamic */
+.table-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1vh 1vw 1vh 1vw;
+  background-color: aqua;
+  table {
+    min-width: 50vw;
+    min-height: 50vh;
+    border-collapse: collapse;
+    td {
+      border: solid 2px black;
+    }
+    .blue {
+      background-color: blue;
+    }
+    .orange {
+      background-color: orange;
+    }
+  }
 }
-td {
-  border: solid 2px black;
-}
+
 </style>

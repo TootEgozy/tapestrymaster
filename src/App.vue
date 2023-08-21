@@ -12,9 +12,7 @@
         <button @click="generateTable">Generate</button>
       </div>
     </div>
-    <div id="table-container">
-      <DrawingTable :rows="rowsNumber" :columns="columnsNumber" />
-    </div>
+    <DrawingTable :rows="rowsNumber" :columns="columnsNumber" :colors="colors" />
   </div>
 </template>
 
@@ -28,9 +26,7 @@ export default {
       rowsNumber: 0,
       columnsNumber: 0,
       generated: false,
-      colors: [],
-      colorA: "blue",
-      colorB: "orange",
+      colors: ["blue", "orange"]
     };
   },
 
