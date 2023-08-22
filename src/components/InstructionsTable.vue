@@ -2,14 +2,16 @@
   <div class="instructions-table-container">
     <h3>Instructions:</h3>
     <table>
-
+      <tr v-for="(row, i) in tableRows" :key="i">
+        <td>{{ row }}</td>
+      </tr>
     </table>
   </div>
 </template>
 
 <script>
 
-import {condenseArray} from "../utils/condenseArray";
+import { condenseArray } from "@/utils/condenseArray";
 
 export default {
   name: 'InstructionsTable',
@@ -19,6 +21,7 @@ export default {
   data() {
     return {
       condensedTableData: undefined,
+      tableRows: [],
     }
   },
 
@@ -28,13 +31,16 @@ export default {
 
   methods: {
     condenseTableData() {
-      this.condensedTableData = this.tableData.map((rowData) => {
+      this.condensedTableData = Object.keys(this.tableData).map((rowNumber) => {
+        const rowData = this.tableData[rowNumber];
         if (!rowData.cells) return rowData;
         const condensedCellData = condenseArray(rowData.cells);
-        rowData.instructions = condensedCellData;
+        const rowDataString = `${rowNumber}: ${rowData.side}: ${condensedCellData.toString()}`
+        console.log(rowDataString);
+        this.tableRows.push(rowDataString);
+        rowData.cells = condensedCellData;
         return rowData;
       });
-      console.log(this.condensedTableData);
     }
   },
 
@@ -50,19 +56,19 @@ export default {
 
 <style lang="scss">
 
-/* TODO: make the td a fixed square (in relation to width or length or whatever) and the table width and height dynamic */
-.table-container {
+.instructions-table-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   margin: 1vh 1vw 1vh 1vw;
-  background-color: aqua;
   table {
-    min-width: 50vw;
-    min-height: 50vh;
     border-collapse: collapse;
+    border: 1px solid orange;
     td {
-      border: solid 2px black;
+      border: none;
+      text-align: left;
+      padding: 5px;
     }
     .blue {
       background-color: blue;
