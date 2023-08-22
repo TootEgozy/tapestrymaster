@@ -37,7 +37,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tapestry Master</title>
-        <script type="text/javascript" src="condenseArray.js"></script>
+        <script type="text/javascript" src="src/utils/condenseArray.js"></script>
     </head>
     <body>
         <div id="columns-rows-input">
@@ -102,8 +102,7 @@
             document.querySelector('body').appendChild(instructionsDiv);
 
             Object.keys(tableData).forEach((rowNumber) => {
-                const row = tableData[rowNumber];
-                const paragraph = document.createElement('p');
+                 const paragraph = document.createElement('p');
                 instructionsDiv.appendChild(paragraph);
                 if(Number(rowNumber) === 0) {
                     paragraph.innerHTML = `row ${rowNumber} : ${row.toString()}`;

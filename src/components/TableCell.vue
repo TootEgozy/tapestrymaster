@@ -1,7 +1,7 @@
 <template>
   <td
       :class="currentColor"
-      @click.stop="toggleColor"
+      @click="toggleColor"
   >
   </td>
 </template>
@@ -9,7 +9,9 @@
 <script>
 export default {
   name: 'TableCell',
+
   props: ['colors'],
+
   data() {
     return {
       colorA: this.colors[0],
@@ -17,14 +19,17 @@ export default {
       currentColor: this.colorA,
     }
   },
+
   methods: {
     toggleColor() {
       this.currentColor = this.currentColor === this.colorA ? this.colorB : this.colorA;
     }
   },
+
   mounted() {
     this.currentColor = this.colorA;
   },
+
 }
 </script>
 

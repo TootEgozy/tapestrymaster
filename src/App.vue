@@ -9,64 +9,61 @@
         <input type="number" min="0" id="rows" v-model="rowsNumber" />
         <label for="columns">columns:</label>
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
-        <button @click="generateTable">Generate</button>
       </div>
     </div>
     <DrawingTable :rows="rowsNumber" :columns="columnsNumber" :colors="colors" />
+    <button @click="readTable"> read table </button>
+    <InstructionsTable
+        v-if="displayInstructions"
+        :tableData="tableData"
+    />
   </div>
 </template>
 
 <script>
 import DrawingTable from "@/components/DrawingTable.vue";
+import InstructionsTable from "@/components/InstructionsTable.vue";
 
 export default {
   name: "App",
+
   data() {
     return {
-      rowsNumber: 0,
-      columnsNumber: 0,
+      rowsNumber: 1,
+      columnsNumber: 1,
       generated: false,
-      colors: ["blue", "orange"]
+      colors: ["blue", "orange"],
+      displayInstructions: false,
+      tableData: undefined,
     };
   },
 
   methods: {
-    toggleColor(event) {
-      const cell = event.target;
-      const cellColor = cell["data-color"];
-      const [newColorType, newColor] =
-        cellColor === "colorA"
-          ? ["colorB", this.colorB]
-          : ["colorA", this.colorA];
-      cell.style.backgroundColor = newColor;
-      cell["data-color"] = newColorType;
-    },
-
-    generateTable() {
-      const columnsElement = document.getElementById("columns");
-      const rowsElement = document.getElementById("rows");
-      const container = document.getElementById("table-container");
-      container.innerHTML = "";
-      const [cols, rows] = [columnsElement.value, rowsElement.value];
-      const table = document.createElement("table");
-      for (let i = 0; i < rows; i++) {
-        const row = table.insertRow();
-        row["order"] = rows - i;
-        row["side"] = (rows - i) % 2 === 0 ? "WS" : "RS";
-        for (let j = 0; j < cols; j++) {
-          const cell = row.insertCell();
-          cell.className = "table-cell";
-          cell["data-color"] = "colorA";
-          cell.style.backgroundColor = this.colorA;
-          cell.onclick = this.toggleColor;
+    readTable() {
+      const tableData = { 0: ["ch", Number(this.columnsNumber) + 1]};
+      const table = document.getElementById("drawing-table");
+      Array.from(table.rows).reverse().forEach((tr) => {
+        const rowOrder = tr.getAttribute("order");
+        const rowSide = tr.getAttribute("side");
+        const cells = Array.from(tr.cells).map((cell) =>  cell.classList[0]);
+        tableData[rowOrder] = {
+          cells: rowOrder % 2 === 0 ? cells : cells.reverse(),
+          side: rowSide,
         }
-      }
-      container.appendChild(table);
+      });
+      this.tableData = tableData;
+      this.toggleShowInstructions();
+    },
+    toggleShowInstructions () {
+      this.displayInstructions = !this.displayInstructions;
     },
   },
+
   components: {
     DrawingTable,
+    InstructionsTable,
   }
+
 };
 </script>
 
@@ -83,16 +80,6 @@ export default {
     justify-content: center;
     gap: 10px;
     font-family: Arial, Helvetica, sans-serif;
-    table {
-      border-collapse: collapse;
-    }
-    td {
-      border: solid 2px black;
-    }
-    .table-cell {
-      width: 40px;
-      height: 40px;
-    }
   }
 }
 </style>
