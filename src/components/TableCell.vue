@@ -1,7 +1,7 @@
 <template>
   <td
       :class="currentColor"
-      @click="toggleColor"
+      @click.prevent="toggleColor"
       @mouseover.prevent="handleMouseOver"
   >
   </td>
