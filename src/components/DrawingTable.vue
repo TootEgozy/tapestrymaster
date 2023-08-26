@@ -4,8 +4,9 @@
     <table
         id="drawing-table"
         @mousedown="toggleMouse"
-        @mouseup="this.mousedown = false"
-        @mouseleave="this.mousedown = false"
+        @mouseup="dropMouse"
+        @mouseleave="dropMouse"
+        @dragstart="dropMouse"
     >
       <tr
           v-for="(row, i) in createArray(rows)"
@@ -53,8 +54,10 @@ export default {
       // force vue to regenerate the table
     },
     toggleMouse() {
-      console.log(`toggling mousedown to: ${!this.mousedown}`);
       this.mousedown = !this.mousedown;
+    },
+    dropMouse() {
+      this.mousedown = false;
     }
   },
 
