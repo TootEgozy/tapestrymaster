@@ -1,7 +1,13 @@
 <template>
   <div class="drawing-table-container">
 
-    <table id="drawing-table">
+    <table
+        id="drawing-table"
+        @mousedown="toggleMouse"
+        @mouseup="dropMouse"
+        @mouseleave="dropMouse"
+        @dragstart="dropMouse"
+    >
       <tr
           v-for="(row, i) in createArray(rows)"
           :key="row"
@@ -12,6 +18,7 @@
             v-for="(column) in createArray(columns)"
             :key="column"
             :colors="colors"
+            :mousedown="mousedown"
         />
       </tr>
     </table>
@@ -30,6 +37,7 @@ export default {
 
   data() {
     return {
+      mousedown: false,
     }
   },
 
@@ -44,6 +52,12 @@ export default {
     },
     regenerateTable() {
       // force vue to regenerate the table
+    },
+    toggleMouse() {
+      this.mousedown = !this.mousedown;
+    },
+    dropMouse() {
+      this.mousedown = false;
     }
   },
 
