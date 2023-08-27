@@ -9,16 +9,18 @@
         @dragstart="dropMouse"
     >
       <tr
-          v-for="(row, i) in createArray(rows)"
+          v-for="(row, rowIndex) in createArray(rows)"
           :key="row"
-          :order="rows - i"
-          :side="(rows - i) % 2 === 0 ? 'WS' : 'RS'"
+          :order="rows - rowIndex"
+          :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
       >
         <TableCell
-            v-for="(column) in createArray(columns)"
+            v-for="(column, columnIndex) in createArray(columns)"
             :key="column"
             :colors="colors"
+            :ref="`cellRef${rowIndex}-${columnIndex}`"
             :mousedown="mousedown"
+
         />
       </tr>
     </table>
@@ -47,12 +49,18 @@ export default {
   },
 
   methods: {
-    createArray (length) {
+    createArray(length) {
       return Array.from(Array(length).keys());
     },
     regenerateTable() {
       // force vue to regenerate the table
     },
+    resetCellsColor() {
+      for (let i = 0; i < this.rows; i++) {
+        for (let j = 0; j < this.columns; j++) {
+          this.$refs[`cellRef${i}-${j}`][0].resetColor();
+        }
+      }
     toggleMouse() {
       this.mousedown = !this.mousedown;
     },

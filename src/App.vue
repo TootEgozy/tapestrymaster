@@ -11,8 +11,16 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
     </div>
-    <DrawingTable :rows="rowsNumber" :columns="columnsNumber" :colors="colors" />
-    <button @click="readTable"> read table </button>
+    <DrawingTable
+        :rows="rowsNumber"
+        :columns="columnsNumber"
+        :colors="colors"
+        :ref="'drawingTableRef'"
+    />
+    <div class="table-buttons">
+      <button @click="readTable"> read table </button>
+      <button @click="resetColor"> reset </button>
+    </div>
     <InstructionsTable
         v-if="displayInstructions"
         :tableData="tableData"
@@ -53,6 +61,9 @@ export default {
       });
       this.tableData = tableData;
       this.toggleShowInstructions();
+    },
+    resetColor() {
+      this.$refs[`drawingTableRef`].resetCellsColor();
     },
     toggleShowInstructions () {
       this.displayInstructions = !this.displayInstructions;
