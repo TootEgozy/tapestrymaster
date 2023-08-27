@@ -53,13 +53,14 @@ export default {
           this.$refs[`cellRef${i}-${j}`][0].resetColor();
         }
       }
-    toggleMouse() {
-      this.mousedown = !this.mousedown;
     },
-    dropMouse() {
-      this.mousedown = false;
-    }
-  },
+      toggleMouse(){
+        this.mousedown = !this.mousedown;
+      },
+      dropMouse(){
+        this.mousedown = false;
+      }
+    },
 
   components: {
     TableCell,
