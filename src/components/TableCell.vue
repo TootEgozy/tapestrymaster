@@ -23,6 +23,12 @@ export default {
   methods: {
     toggleColor() {
       this.currentColor = this.currentColor === this.colorA ? this.colorB : this.colorA;
+    },
+    resetColor() {
+      this.currentColor = this.colorA;
+    },
+    handleMouseOver() {
+      if(this.mousedown) this.toggleColor();
     }
   },
 
