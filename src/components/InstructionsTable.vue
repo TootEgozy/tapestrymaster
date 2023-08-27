@@ -36,7 +36,6 @@ export default {
         if (!rowData.cells) return rowData;
         const condensedCellData = condenseArray(rowData.cells);
         const rowDataString = `${rowNumber}: ${rowData.side}: ${condensedCellData.toString()}`
-        console.log(rowDataString);
         this.tableRows.push(rowDataString);
         rowData.cells = condensedCellData;
         return rowData;
