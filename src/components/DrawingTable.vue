@@ -1,13 +1,7 @@
 <template>
   <div class="drawing-table-container">
 
-    <table
-        id="drawing-table"
-        @mousedown="toggleMouse"
-        @mouseup="dropMouse"
-        @mouseleave="dropMouse"
-        @dragstart="dropMouse"
-    >
+    <table id="drawing-table">
       <tr
           v-for="(row, rowIndex) in createArray(rows)"
           :key="row"
@@ -20,7 +14,6 @@
             :colors="colors"
             :ref="`cellRef${rowIndex}-${columnIndex}`"
             :mousedown="mousedown"
-
         />
       </tr>
     </table>
@@ -39,7 +32,6 @@ export default {
 
   data() {
     return {
-      mousedown: false,
     }
   },
 

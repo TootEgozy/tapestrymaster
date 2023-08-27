@@ -1,8 +1,7 @@
 <template>
   <td
       :class="currentColor"
-      @click.prevent="toggleColor"
-      @mouseover.prevent="handleMouseOver"
+      @click="toggleColor"
   >
   </td>
 </template>
@@ -11,7 +10,7 @@
 export default {
   name: 'TableCell',
 
-  props: ['colors', 'mousedown'],
+  props: ['colors'],
 
   data() {
     return {
