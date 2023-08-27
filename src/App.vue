@@ -1,15 +1,25 @@
 <template>
   <div class="app-body">
     <div class="inputs-container">
+
       <p>
         Insert the desired work measurements (rows, columns) and press generate
       </p>
+
       <div id="columns-rows-input">
         <label for="rows">rows:</label>
         <input type="number" min="0" id="rows" v-model="rowsNumber" />
         <label for="columns">columns:</label>
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
+
+<!--      <div id="colors-input">-->
+<!--        <label for="rows">rows:</label>-->
+<!--        <input type="color" min="0" id="rows" v-model="rowsNumber" />-->
+<!--        <label for="columns">columns:</label>-->
+<!--        <input type="number" min="0" id="columns" v-model="columnsNumber"/>-->
+<!--      </div>-->
+
     </div>
     <DrawingTable
         :rows="rowsNumber"
