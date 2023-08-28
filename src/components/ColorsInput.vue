@@ -11,6 +11,8 @@
 </templa>
 
 <script>
+
+import { namedColors } from "@/utils/namedColors";
 // color = {
 //   order: Number,
 //   name: String,
@@ -22,6 +24,17 @@ export default {
   data() {
     return {
       colors: [],
+    }
+  },
+  methods: {
+    randomiseIndex(max) {
+        return Math.round(Math.random() * max);
+    },
+    generateColor() {
+      const namedColor = namedColors[this.randomiseIndex(namedColors.length - 1)];
+      return {
+
+      }
     }
   }
 }
