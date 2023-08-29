@@ -13,12 +13,7 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-<!--      <div id="colors-input">-->
-<!--        <label for="rows">rows:</label>-->
-<!--        <input type="color" min="0" id="rows" v-model="rowsNumber" />-->
-<!--        <label for="columns">columns:</label>-->
-<!--        <input type="number" min="0" id="columns" v-model="columnsNumber"/>-->
-<!--      </div>-->
+      <ColorsInput />
 
     </div>
     <DrawingTable
@@ -39,6 +34,7 @@
 </template>
 
 <script>
+import ColorsInput from "@/components/ColorsInput.vue";
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 
@@ -83,6 +79,7 @@ export default {
   components: {
     DrawingTable,
     InstructionsTable,
+    ColorsInput,
   }
 
 };

@@ -1,40 +1,74 @@
-<templa>
-// have two basic colors which the user starts with. it can be fun to pick 2 random colors
-// start with 2 color inputs which are the minimum, bind them to the colors array
-// have a plus button (or "add color") which adds another color to the colors list with random color
-      <div id="colors-input">
-        <label for="rows">rows:</label>
-        <input type="color" min="0" id="rows" v-model="rowsNumber" />
-        <label for="columns">columns:</label>
-        <input type="number" min="0" id="columns" v-model="columnsNumber"/>
-      </div>
-</templa>
+<template>
+
+  <div class="colors-input-container" :v-if="colors.length">
+
+    <div id="colors-input" :v-for="(color, i) in colors">
+      <label for="color">color{{color}}</label>
+      <input
+          type="color"
+          class="`color${color.letter}`"
+          v-model="newColor"
+      >
+    </div>
+
+  </div>
+
+</template>
 
 <script>
 
-import { namedColors } from "@/utils/namedColors";
-// color = {
-//   order: Number,
-//   name: String,
-//   alphabeticalName: String,
-//   color: any
-// }
+import { namedColors } from "@/utils/namedColors.js";
 
 export default {
+
+  name: 'ColorsInput',
+
   data() {
     return {
       colors: [],
+      newColor: undefined,
+      availableLetters: Array.from(Array(26)).map((e, i) => i + 65).map((n) => String.fromCharCode(n)),
+      availableColors: namedColors,
     }
   },
+
   methods: {
+
     randomiseIndex(max) {
         return Math.round(Math.random() * max);
     },
-    generateColor() {
-      const namedColor = namedColors[this.randomiseIndex(namedColors.length - 1)];
-      return {
 
+    getColorOrder() {
+      if(!this.colors.length) return 0;
+      return this.colors[this.colors.length - 1].order + 1;
+    },
+
+    generateColor(order) {
+      const letter = this.availableLetters.splice(0, 1);
+      const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
+      const color = this.availableColors.splice(colorIndex, 1)[0];
+      return {
+        order,
+        alphabeticalName: letter,
+        name: color.name,
+        RGB: color.RGB,
       }
+    },
+
+    initialiseColors() {
+      this.availableColors = this.availableColors.length ? this.availableColors : namedColors;
+      const newColors = [this.generateColor(0), this.generateColor(1)];
+      newColors.forEach((color) => this.colors.push(color));
+    },
+  },
+
+  mounted() {
+    this.initialiseColors();
+  },
+
+  beforeUpdate() {
+    if(this.colors.length < 2) {
+      // this.initialiseColors();
     }
   }
 }
