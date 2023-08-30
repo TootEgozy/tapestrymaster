@@ -1,17 +1,14 @@
-<template>
+<template v-if="this.colors.length">
 
-  <div class="colors-input-container" :v-if="colors.length">
-
-    <div id="colors-input" :v-for="(color, i) in colors">
-      <label for="color">color{{color}}</label>
+  <div class="colors-input-container" v-for="(color, i) in colors" :key="i">
+      <label for="color">color{{color.alphabeticalName}}</label>
       <input
           type="color"
-          class="`color${color.letter}`"
-          v-model="newColor"
+          class="`color${color.alphabeticalName}`"
+          v-model="colors[i].RGB"
       >
-    </div>
-
   </div>
+  <button @click="console.log(colors)">log colors</button>
 
 </template>
 
@@ -44,7 +41,7 @@ export default {
     },
 
     generateColor(order) {
-      const letter = this.availableLetters.splice(0, 1);
+      const letter = this.availableLetters.splice(0, 1)[0];
       const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
       const color = this.availableColors.splice(colorIndex, 1)[0];
       return {
@@ -66,11 +63,6 @@ export default {
     this.initialiseColors();
   },
 
-  beforeUpdate() {
-    if(this.colors.length < 2) {
-      // this.initialiseColors();
-    }
-  }
 }
 </script>
 
