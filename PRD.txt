@@ -33,22 +33,38 @@ Phase 3 deconstruct:
 * create the instructions component
 * pass the data to the instructions to create the instructions.
 
-Future features:
+Phase 4 - first features:
 1. allow multiple color selection.
 2. allow the user to draw by dragging the mouse and by selecting an area to color at once.
+3. allow user to erase the drawing (back to color A).
+4. allow user to toggle between color names and alphabetical names.
+4. allow the user to print the instructions.
+5. allow the user to download the instructions.
+
+Phase 5 - make it website
+1. add a menu in the top with 'home' 'about' and 'how to start' pages, using vuex router.
+2. add a footer with my info and an offer to buy me coffee.
+
+Phase 6 - deploying
+1. deploy the site to netlify, set it to be built from master.
+
+Phase 7 - design
+* research design tools
+* make the site pretty
+* make the site compatible with different screen sizes
+
+Future features:
 3. create random patterns (this can be a whole new algorithm and cool feature - maybe use an AI or other API).
 4. allow the user to print the instructions.
 5. create a graphical pattern.
 6. allow the user to upload an image and convert it to pixels, limit the colors and to the instructions.
-7. upload the code to netlify or another server.
 8. offer search of patters - ask the user if they agree to share the pattern. save it to the DB with tags,
    and allow users to search the tags.
 9. allow connection with password to see your own patterns.
 10. display complexity level based on size and color changes.
 11. add animations.
 12. offer an instructions section where there is a basic explanation on how to tapestry crochet, with a demonstrating video.
-13. add an about page with the offer to buy me coffee.
 14. add a color selector which allows the user to select a color from an image.
 15. add the "I'm looking for inspiration" and "I'm looking for a challenge" tags which
     will offer ideas for projects (see if ravlery has an API)
-16. allow the user to insert string measurements and display the estimated final project size.
+16. allow the user to insert gauge measurements and display the estimated final project size - "Project size calculator"
