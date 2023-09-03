@@ -2,6 +2,7 @@
   <td :class="currentColor">
 <!--      @click.prevent="toggleColor"-->
 <!--      @mouseover.prevent="handleMouseOver"-->
+    <butto @click="console.log(this)">this</butto>
   </td>
 </template>
 
@@ -15,7 +16,7 @@ export default {
     return {
       colorA: undefined,
       colorB: undefined,
-      currentColor: 'blue',
+      currentColor: undefined,
     }
   },
 
@@ -31,12 +32,11 @@ export default {
     // }
   },
 
-  mounted() {
-    console.log('cell mounted');
-    // console.log('colors in cell');
-    // console.log(this.colors)
-    //this.currentColor = this.colors[0];
-  },
+  watch: {
+    colors: function(newVal) {
+      console.log('got colors: ', newVal);
+    }
+  }
 
 }
 </script>

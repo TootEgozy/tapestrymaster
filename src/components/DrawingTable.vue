@@ -69,12 +69,6 @@ export default {
       }
     },
 
-  mounted() {
-    // console.log('colors in table');
-    // console.log(this.colors);
-    console.log('drawing table mounted');
-  },
-
   components: {
     TableCell,
   }

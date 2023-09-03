@@ -13,12 +13,13 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput
-          :ref="'colorsInputRef'"
-          @colorsGenerated="setGeneratedColors"
-      />
+      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" />
+<!--          @colorsGenerated="setGeneratedColors"-->
 
     </div>
+
+    <button @click="logColorsApp">log Colors App</button>
+
     <DrawingTable
         :rows="rowsNumber"
         :columns="columnsNumber"
@@ -37,10 +38,9 @@
 </template>
 
 <script>
-import ColorsInput from "@/components/ColorsInput.vue";
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
-import colorsInput from "@/components/ColorsInput.vue";
+import ColorsInput from "@/components/ColorsInput.vue";
 
 export default {
   name: "App",
@@ -50,7 +50,7 @@ export default {
       rowsNumber: 1,
       columnsNumber: 1,
       generated: false,
-      colors: undefined,
+      colors: [],
       displayInstructions: false,
       tableData: undefined,
     };
@@ -78,18 +78,19 @@ export default {
     toggleShowInstructions () {
       this.displayInstructions = !this.displayInstructions;
     },
-    // getColorsFromInput() {
-    //   this.colors = this.$refs[`colorsInputRef`].getColors();
-    // },
-    setGeneratedColors(generatedColors) {
-      this.colors = generatedColors;
+    setGeneratedColors(colorsFromInput) {
+      this.colors = colorsFromInput;
+    },
+    logColorsApp() {
+      console.log(this.colors);
     }
+
   },
 
   mounted() {
-    // this.getColorsFromInput();
-    // console.log(this.colors);
-    console.log('app mounted');
+    // console.log('app mounted, colors in app:');
+    // const colors = this.$refs['colorsInputRef'].getColors()
+    // console.log(colors);
   },
 
   components: {

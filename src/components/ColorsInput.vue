@@ -63,7 +63,6 @@ export default {
       }
     },
     initialiseColors() {
-      console.log('initialising colors in colorsInput');
       this.availableColors = this.availableColors.length ? this.availableColors : namedColors;
       const newColors = [this.generateColor(0), this.generateColor(1)];
       newColors.forEach((color) => this.colors.push(color));
@@ -87,13 +86,8 @@ export default {
       this.colors.push(newColor);
     },
     getColors () {
-      console.log('getting colors in colorsInput');
       return this.colors;
     }
-  },
-
-  mounted() {
-    console.log('colors input mounted');
   },
 
   created() {
