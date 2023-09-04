@@ -6,6 +6,8 @@
         Insert the desired work measurements (rows, columns) and press generate
       </p>
 
+      <TestComponent :colors="colors" />
+
       <div id="columns-rows-input">
         <label for="rows">rows:</label>
         <input type="number" min="0" id="rows" v-model="rowsNumber" />
@@ -41,6 +43,7 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
+import TestComponent from "@/components/TestComponent.vue";
 
 export default {
   name: "App",
@@ -97,6 +100,7 @@ export default {
     DrawingTable,
     InstructionsTable,
     ColorsInput,
+    TestComponent,
   }
 
 };

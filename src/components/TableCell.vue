@@ -1,8 +1,9 @@
 <template>
-  <td :class="currentColor">
-<!--      @click.prevent="toggleColor"-->
-<!--      @mouseover.prevent="handleMouseOver"-->
-    <butto @click="console.log(this)">this</butto>
+  <td :class="hh"
+      @click.prevent="toggleColor"
+      @mouseover.prevent="handleMouseOver"
+  >
+    <button @click="console.log(colors[colorIndex])">log current color</button>
   </td>
 </template>
 
@@ -14,27 +15,26 @@ export default {
 
   data() {
     return {
-      colorA: undefined,
-      colorB: undefined,
-      currentColor: undefined,
+      colorIndex: 0,
     }
   },
 
   methods: {
-    // toggleColor() {
-    //   this.currentColor = this.currentColor === this.colorA ? this.colorB : this.colorA;
-    // },
-    // resetColor() {
-    //   this.currentColor = this.colorA;
-    // },
-    // handleMouseOver() {
-    //   if(this.mousedown) this.toggleColor();
-    // }
+    toggleColor() {
+      // this.currentColor = this.currentColor === this.colorA ? this.colorB : this.colorA;
+    },
+    resetColor() {
+      this.currentColor = this.colors[0];
+    },
+    handleMouseOver() {
+      if(this.mousedown) this.toggleColor();
+    }
   },
 
   watch: {
-    colors: function(newVal) {
-      console.log('got colors: ', newVal);
+    colors: function(colorsArr) {
+      console.log(colorsArr[0]);
+      this.currentColor = colorsArr[0];
     }
   }
 
