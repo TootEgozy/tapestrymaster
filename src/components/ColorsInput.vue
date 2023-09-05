@@ -1,20 +1,27 @@
-<template v-if="this.colors.length">
+<template>
 
-  <div class="colors-inputs-container">
+  <div class="colors-inputs-container" v-if="this.colors.length">
+    <p>{{callCounter}}</p>
 
     <div class="single-color-inputs-container" v-for="(color, i) in colors" :key="i">
 
       <input
+          v-if="displayColorNames"
           type="text"
-          :class="color-name"
+          :class="'color-name'"
           v-model="colors[i].name"
       >
+
+      <p
+          v-if="!this.displayColorNames"
+      >
+        {{color.alphabeticalName}}
+      </p>
 
       <input
           type="color"
           :class="[color.alphabeticalName, 'color-input']"
           v-model="colors[i].RGB"
-          @input="resetColorName"
       >
       <button @click="removeColor(color)">-</button>
 
@@ -28,22 +35,31 @@
       +
     </button>
 
+    <button
+        @click="toggleColorNames"
+    >
+      {{ displayColorNames ? 'Display colors as general' : 'Display specific colors'}}
+    </button>
+
   </div>
 
 </template>
 
 <script>
-
+import { v4 as uuid } from 'uuid';
 import { namedColors } from "@/utils/namedColors.js";
 
 export default {
+
   name: 'ColorsInput',
 
   data() {
     return {
       colors: [],
-      availableLetters: Array.from(Array(26)).map((e, i) => i + 65).map((n) => String.fromCharCode(n)),
+      lastLetterCode: 65,
       availableColors: namedColors,
+      displayColorNames: true,
+      callCounter: 0,
     }
   },
 
@@ -52,34 +68,50 @@ export default {
         return Math.round(Math.random() * max);
     },
     generateColor(order) {
-      const letter = this.availableLetters.splice(0, 1)[0];
+      this.callCounter++;
+      const letter = String.fromCharCode(this.lastLetterCode);
       const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
       const color = this.availableColors.splice(colorIndex, 1)[0];
-      return {
+      this.lastLetterCode++;
+      console.log(String.fromCharCode(this.lastLetterCode));
+      const colorObj = {
         order,
+        id: uuid(),
         alphabeticalName: `color${letter}`,
-        name:  color.name,
+        name: color.name,
         RGB: color.RGB,
-      }
+      };
+      console.log(colorObj);
+      return colorObj;
     },
     initialiseColors() {
-      this.availableColors = this.availableColors.length ? this.availableColors : namedColors;
       const newColors = [this.generateColor(0), this.generateColor(1)];
       newColors.forEach((color) => this.colors.push(color));
     },
-    resetColorName(e) {
-      const colorIndex = this.colors.findIndex((color) => color.alphabeticalName === e.target.className);
-      if(colorIndex > -1) {
-        const color = this.colors[colorIndex];
-        color.name = undefined;
-        this.colors.splice(colorIndex, 1, color);
-      }
-    },
+    // resetColorName(e) {
+    //   const colorIndex = this.colors.findIndex((color) => color.alphabeticalName === e.target.className);
+    //   if(colorIndex > -1) {
+    //     const color = this.colors[colorIndex];
+    //     color.name = undefined;
+    //     this.colors.splice(colorIndex, 1, color);
+    //   }
+    // },
     removeColor(colorToRemove) {
+      // with removing a color we also need to update the order and alphabetical name for all the colors
+      // we also need to add letters to availableLetters
       const toRemoveIndex = this.colors.findIndex((color) => {
+        console.log(color);
         return color.RGB === colorToRemove.RGB && color.alphabeticalName === colorToRemove.alphabeticalName
       });
       this.colors.splice(toRemoveIndex, 1);
+      const removedLetterCharCode = colorToRemove.alphabeticalName[5].charCodeAt(0);
+      this.colors = this.colors.map((color) => {
+        const colorLetterCharCode = color.alphabeticalName[5].charCodeAt(0);
+        if(colorLetterCharCode > removedLetterCharCode) {
+          color.alphabeticalName = `color${String.fromCharCode(colorLetterCharCode - 1)}`;
+        }
+        return color;
+      });
     },
     addNewColor() {
       const newColor = this.generateColor(this.colors.length > 0 ? this.colors.length : 1);
@@ -87,6 +119,9 @@ export default {
     },
     getColors () {
       return this.colors;
+    },
+    toggleColorNames() {
+      this.displayColorNames = !this.displayColorNames;
     }
   },
 
@@ -94,6 +129,11 @@ export default {
     this.initialiseColors();
     this.$emit('colorsGenerated', this.colors);
   },
+
+  onErrorCaptured(err) {
+    console.log('error in colorsinput');
+    console.log(err);
+  }
 
 }
 </script>

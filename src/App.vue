@@ -1,12 +1,10 @@
 <template>
   <div class="app-body">
-    <div class="inputs-container">
 
+    <div class="inputs-container">
       <p>
         Insert the desired work measurements (rows, columns) and press generate
       </p>
-
-      <TestComponent :colors="colors" />
 
       <div id="columns-rows-input">
         <label for="rows">rows:</label>
@@ -16,26 +14,26 @@
       </div>
 
       <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" />
-<!--          @colorsGenerated="setGeneratedColors"-->
-
     </div>
 
-    <button @click="logColorsApp">log Colors App</button>
-
     <DrawingTable
+        v-if="colors.length > 0"
         :rows="rowsNumber"
         :columns="columnsNumber"
         :colors="colors"
         :ref="'drawingTableRef'"
     />
+
     <div class="table-buttons">
       <button @click="readTable"> read table </button>
       <button @click="resetColor"> reset </button>
     </div>
+
     <InstructionsTable
         v-if="displayInstructions"
         :tableData="tableData"
     />
+
   </div>
 </template>
 
@@ -43,7 +41,6 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
-import TestComponent from "@/components/TestComponent.vue";
 
 export default {
   name: "App",
@@ -84,9 +81,6 @@ export default {
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
     },
-    logColorsApp() {
-      console.log(this.colors);
-    }
 
   },
 
@@ -100,7 +94,6 @@ export default {
     DrawingTable,
     InstructionsTable,
     ColorsInput,
-    TestComponent,
   }
 
 };
