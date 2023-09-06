@@ -12,12 +12,12 @@
       >
 
       <p v-if="!this.displayColorNames">
-        {{color.alphabeticalName}}
+        {{color.genericName}}
       </p>
 
       <input
           type="color"
-          :class="[color.alphabeticalName, 'color-input']"
+          :class="[color.genericName, 'color-input']"
           v-model="colors[i].RGB"
       >
 
@@ -36,7 +36,7 @@
     <button
         @click="toggleColorNames"
     >
-      {{ displayColorNames ? 'Display colors as general' : 'Display specific colors'}}
+      {{ displayColorNames ? 'Display colors as generic' : 'Display color names'}}
     </button>
 
   </div>
@@ -72,7 +72,7 @@ export default {
       return {
         order,
         id: uuid(),
-        alphabeticalName: `color${letter}`,
+        genericName: `color${letter}`,
         name: color.name,
         RGB: color.RGB,
       };
@@ -82,17 +82,17 @@ export default {
       newColors.forEach((color) => this.colors.push(color));
     },
     // resetColorName(e) {
-    //   const colorIndex = this.colors.findIndex((color) => color.alphabeticalName === e.target.className);
+    //   const colorIndex = this.colors.findIndex((color) => color.genericName === e.target.className);
     //   if(colorIndex > -1) {
     //     const color = this.colors[colorIndex];
     //     color.name = undefined;
     //     this.colors.splice(colorIndex, 1, color);
     //   }
     // },
-    resetColorsAlphabeticalNames() {
+    resetColorsGenericNames() {
       this.lastLetterCode = 65;
       this.colors = this.colors.map((color) => {
-        color.alphabeticalName = `color${String.fromCharCode(this.lastLetterCode)}`;
+        color.genericName = `color${String.fromCharCode(this.lastLetterCode)}`;
         this.lastLetterCode++
         return color;
       });
@@ -100,7 +100,7 @@ export default {
     removeColor(colorToRemove) {
       const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
       this.colors.splice(toRemoveIndex, 1);
-      this.resetColorsAlphabeticalNames();
+      this.resetColorsGenericNames();
     },
     addNewColor() {
       const newColor = this.generateColor(this.colors.length > 0 ? this.colors.length : 1);

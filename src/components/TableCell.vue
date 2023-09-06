@@ -1,7 +1,7 @@
 <template>
   <td
       :style="{ backgroundColor: currentColor.RGB}"
-      :class="currentColor.alphabeticalName"
+      :class="currentColor.genericName"
       @click.prevent="changeColor"
       @mouseover.prevent="handleMouseOver"
   >
@@ -9,8 +9,6 @@
 </template>
 
 <script>
-
-import colorsInput from "@/components/ColorsInput.vue";
 
 export default {
   name: 'TableCell',
