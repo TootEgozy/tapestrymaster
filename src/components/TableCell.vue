@@ -1,13 +1,15 @@
 <template>
   <td
-      :class="currentColor"
-      @click.prevent="toggleColor"
+      :style="{ backgroundColor: currentColor.RGB}"
+      :class="currentColor.genericName"
+      @click.prevent="changeColor"
       @mouseover.prevent="handleMouseOver"
   >
   </td>
 </template>
 
 <script>
+
 export default {
   name: 'TableCell',
 
@@ -15,26 +17,34 @@ export default {
 
   data() {
     return {
-      colorA: this.colors[0],
-      colorB: this.colors[1],
-      currentColor: this.colorA,
+      colorIndex: 0,
+      currentColor: { RGB: '000000'},
     }
   },
 
   methods: {
-    toggleColor() {
-      this.currentColor = this.currentColor === this.colorA ? this.colorB : this.colorA;
+    changeColor() {
+      this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
+      this.currentColor = this.colors[this.colorIndex];
     },
     resetColor() {
-      this.currentColor = this.colorA;
+      this.currentColor = this.colors[0];
     },
     handleMouseOver() {
-      if(this.mousedown) this.toggleColor();
+      if(this.mousedown) this.changeColor();
     }
   },
 
+  watch: {
+    'colors.length': function() {
+      const currentColorDeleted = !this.colors.find((color) => color.id === this.currentColor.id);
+      if(currentColorDeleted) this.currentColor = this.colors[0];
+      this.colorIndex = this.colors.findIndex((color) => color.id === this.currentColor.id);
+    },
+  },
+
   mounted() {
-    this.currentColor = this.colorA;
+    this.currentColor = this.colors[this.colorIndex];
   },
 
 }

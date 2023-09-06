@@ -44,7 +44,7 @@ export default {
 
   watch: {
     rows: 'regenerateTable',
-    columns: 'regenerateTable'
+    columns: 'regenerateTable',
   },
 
   methods: {
@@ -84,7 +84,6 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 1vh 1vw 1vh 1vw;
-  background-color: aqua;
   #drawing-table {
     min-width: 50vw;
     min-height: 50vh;
