@@ -1,6 +1,6 @@
 <template>
 
-  <div class="colors-inputs-container" v-if="this.colors.length">
+  <div class="colors-inputs-container">
 
     <div class="single-color-inputs-container" v-for="(color, i) in colors" :key="i">
 
@@ -11,9 +11,7 @@
           v-model="colors[i].name"
       >
 
-      <p
-          v-if="!this.displayColorNames"
-      >
+      <p v-if="!this.displayColorNames">
         {{color.alphabeticalName}}
       </p>
 
@@ -22,6 +20,7 @@
           :class="[color.alphabeticalName, 'color-input']"
           v-model="colors[i].RGB"
       >
+
       <button @click="removeColor(color)">-</button>
 
     </div>
@@ -70,14 +69,13 @@ export default {
       const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
       const color = this.availableColors.splice(colorIndex, 1)[0];
       this.lastLetterCode++;
-      const colorObj = {
+      return {
         order,
         id: uuid(),
         alphabeticalName: `color${letter}`,
         name: color.name,
         RGB: color.RGB,
       };
-      return colorObj;
     },
     async initialiseColors() {
       const newColors = [this.generateColor(0), this.generateColor(1)];
@@ -91,26 +89,22 @@ export default {
     //     this.colors.splice(colorIndex, 1, color);
     //   }
     // },
-    removeColor(colorToRemove) {
-      // with removing a color we also need to update the order and alphabetical name for all the colors
-      // we also need to add letters to availableLetters
-      const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
-      this.colors.splice(toRemoveIndex, 1);
-      const removedLetterCharCode = colorToRemove.alphabeticalName[5].charCodeAt(0);
+    resetColorsAlphabeticalNames() {
+      this.lastLetterCode = 65;
       this.colors = this.colors.map((color) => {
-        const colorLetterCharCode = color.alphabeticalName[5].charCodeAt(0);
-        if(colorLetterCharCode > removedLetterCharCode) {
-          color.alphabeticalName = `color${String.fromCharCode(colorLetterCharCode - 1)}`;
-        }
+        color.alphabeticalName = `color${String.fromCharCode(this.lastLetterCode)}`;
+        this.lastLetterCode++
         return color;
       });
+    },
+    removeColor(colorToRemove) {
+      const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
+      this.colors.splice(toRemoveIndex, 1);
+      this.resetColorsAlphabeticalNames();
     },
     addNewColor() {
       const newColor = this.generateColor(this.colors.length > 0 ? this.colors.length : 1);
       this.colors.push(newColor);
-    },
-    getColors () {
-      return this.colors;
     },
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;

@@ -3,7 +3,7 @@
 
     <div class="inputs-container">
       <p>
-        Insert the desired work measurements (rows, columns) and press generate
+        Insert the desired measurements for your project
       </p>
 
       <div id="columns-rows-input">
@@ -14,6 +14,7 @@
       </div>
 
       <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" />
+
     </div>
 
     <DrawingTable
@@ -63,7 +64,7 @@ export default {
       Array.from(table.rows).reverse().forEach((tr) => {
         const rowOrder = tr.getAttribute("order");
         const rowSide = tr.getAttribute("side");
-        const cells = Array.from(tr.cells).map((cell) =>  cell.classList[0]);
+        const cells = Array.from(tr.cells).map((cell) => cell.classList[0]);
         tableData[rowOrder] = {
           cells: rowOrder % 2 === 0 ? cells : cells.reverse(),
           side: rowSide,
@@ -82,12 +83,6 @@ export default {
       this.colors = colorsFromInput;
     },
 
-  },
-
-  mounted() {
-    // console.log('app mounted, colors in app:');
-    // const colors = this.$refs['colorsInputRef'].getColors()
-    // console.log(colors);
   },
 
   components: {

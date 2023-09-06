@@ -38,9 +38,10 @@ export default {
   },
 
   watch: {
-    'colors.length': function(length, prevLength) {
+    'colors.length': function() {
       const currentColorDeleted = !this.colors.find((color) => color.id === this.currentColor.id);
       if(currentColorDeleted) this.currentColor = this.colors[0];
+      this.colorIndex = this.colors.findIndex((color) => color.id === this.currentColor.id);
     },
   },
 
