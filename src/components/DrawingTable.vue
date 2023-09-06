@@ -44,7 +44,7 @@ export default {
 
   watch: {
     rows: 'regenerateTable',
-    columns: 'regenerateTable'
+    columns: 'regenerateTable',
   },
 
   methods: {

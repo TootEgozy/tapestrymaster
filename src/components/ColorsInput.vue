@@ -1,7 +1,6 @@
 <template>
 
   <div class="colors-inputs-container" v-if="this.colors.length">
-    <p>{{callCounter}}</p>
 
     <div class="single-color-inputs-container" v-for="(color, i) in colors" :key="i">
 
@@ -59,7 +58,6 @@ export default {
       lastLetterCode: 65,
       availableColors: namedColors,
       displayColorNames: true,
-      callCounter: 0,
     }
   },
 
@@ -68,12 +66,10 @@ export default {
         return Math.round(Math.random() * max);
     },
     generateColor(order) {
-      this.callCounter++;
       const letter = String.fromCharCode(this.lastLetterCode);
       const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
       const color = this.availableColors.splice(colorIndex, 1)[0];
       this.lastLetterCode++;
-      console.log(String.fromCharCode(this.lastLetterCode));
       const colorObj = {
         order,
         id: uuid(),
@@ -81,10 +77,9 @@ export default {
         name: color.name,
         RGB: color.RGB,
       };
-      console.log(colorObj);
       return colorObj;
     },
-    initialiseColors() {
+    async initialiseColors() {
       const newColors = [this.generateColor(0), this.generateColor(1)];
       newColors.forEach((color) => this.colors.push(color));
     },
@@ -99,10 +94,7 @@ export default {
     removeColor(colorToRemove) {
       // with removing a color we also need to update the order and alphabetical name for all the colors
       // we also need to add letters to availableLetters
-      const toRemoveIndex = this.colors.findIndex((color) => {
-        console.log(color);
-        return color.RGB === colorToRemove.RGB && color.alphabeticalName === colorToRemove.alphabeticalName
-      });
+      const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
       this.colors.splice(toRemoveIndex, 1);
       const removedLetterCharCode = colorToRemove.alphabeticalName[5].charCodeAt(0);
       this.colors = this.colors.map((color) => {
@@ -125,15 +117,16 @@ export default {
     }
   },
 
-  created() {
+  watch: {
+    'colors.length': function () {
+      this.$emit('colorsGenerated', this.colors);
+    }
+  },
+
+  mounted() {
     this.initialiseColors();
     this.$emit('colorsGenerated', this.colors);
   },
-
-  onErrorCaptured(err) {
-    console.log('error in colorsinput');
-    console.log(err);
-  }
 
 }
 </script>

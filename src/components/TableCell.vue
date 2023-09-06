@@ -10,6 +10,8 @@
 
 <script>
 
+import colorsInput from "@/components/ColorsInput.vue";
+
 export default {
   name: 'TableCell',
 
@@ -37,10 +39,8 @@ export default {
 
   watch: {
     'colors.length': function(length, prevLength) {
-      // if a color was deleted, check if the cell's color is in the list. if not, update it to colorA.
-      if(length < prevLength) {
-        // const colorDeleted = this.colors.find(() => {})
-      }
+      const currentColorDeleted = !this.colors.find((color) => color.id === this.currentColor.id);
+      if(currentColorDeleted) this.currentColor = this.colors[0];
     },
   },
 
