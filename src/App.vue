@@ -28,6 +28,7 @@
     <div class="table-buttons">
       <button @click="readTable"> read table </button>
       <button @click="resetColor"> reset </button>
+      <button @click="createPrintableTable"> print </button>
     </div>
 
     <InstructionsTable
@@ -59,7 +60,7 @@ export default {
 
   methods: {
     readTable() {
-      const tableData = { 0: ["ch", Number(this.columnsNumber) + 1]};
+      const tableData = {};
       const table = document.getElementById("drawing-table");
       Array.from(table.rows).reverse().forEach((tr) => {
         const rowOrder = tr.getAttribute("order");
@@ -70,6 +71,8 @@ export default {
           side: rowSide,
         }
       });
+      // TODO: fix this (not showing)
+      tableData['first'] = ["ch", Number(this.columnsNumber) + 1];
       this.tableData = tableData;
       this.toggleShowInstructions();
     },
@@ -81,6 +84,37 @@ export default {
     },
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
+    },
+
+    createPrintableTable() {
+      const printWindow = window.open('', '', 'width=600,height=600');
+      printWindow.document.open();
+      printWindow.document.write('<html><head><title>Printable Drawing</title>');
+      printWindow.document.write('</head><body>');
+
+      const printableTable = document.createElement('table');
+      const currentTable = document.getElementById('drawing-table');
+
+      currentTable.querySelectorAll('tr').forEach((row) => {
+        const printableRow = document.createElement('tr');
+        row.querySelectorAll('td').forEach((cell) => {
+          const printableCell = document.createElement('td');
+          printableCell.innerHTML = cell.innerHTML;
+          printableCell.style.backgroundColor = window.getComputedStyle(cell).backgroundColor;
+          printableRow.appendChild(printableCell);
+        });
+        printableTable.appendChild(printableRow);
+      });
+
+      printWindow.document.write(printableTable.outerHTML);
+      printWindow.document.write('</body></html>');
+      console.log(printWindow.document);
+
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.document.close();
+        printWindow.close();
+      }, 1000);
     },
 
   },
