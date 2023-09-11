@@ -17,6 +17,8 @@
 
     </div>
 
+    <input type="text" v-model="title" />
+
     <DrawingTable
         v-if="colors.length > 0"
         :rows="rowsNumber"
@@ -28,13 +30,19 @@
     <div class="table-buttons">
       <button @click="readTable"> read table </button>
       <button @click="resetColor"> reset </button>
-      <button @click="createPrintableTable"> print </button>
+      <button @click="createPrintableTable"> download or print </button>
     </div>
 
     <InstructionsTable
         v-if="displayInstructions"
         :tableData="tableData"
     />
+
+    <div
+        v-if="!!printableDrawing"
+        v-html="printableDrawing.outerHTML"
+    >
+    </div>
 
   </div>
 </template>
@@ -53,8 +61,10 @@ export default {
       columnsNumber: 1,
       generated: false,
       colors: [],
+      title: 'Project Name',
       displayInstructions: false,
       tableData: undefined,
+      printableDrawing: undefined,
     };
   },
 
@@ -74,6 +84,7 @@ export default {
       // TODO: fix this (not showing)
       tableData['first'] = ["ch", Number(this.columnsNumber) + 1];
       this.tableData = tableData;
+      console.log(this.tableData);
       this.toggleShowInstructions();
     },
     resetColor() {
@@ -87,6 +98,13 @@ export default {
     },
 
     createPrintableTable() {
+      // open a new window, with the title "tapastry crochet pattern: ${user title}",
+      // the smaller version of the drawing, and the instructions
+
+      // allow the user to save or print from that window
+      // close the window
+
+
       const printWindow = window.open('', '', 'width=600,height=600');
       printWindow.document.open();
       printWindow.document.write('<html><head><title>Printable Drawing</title>');
@@ -99,22 +117,29 @@ export default {
         const printableRow = document.createElement('tr');
         row.querySelectorAll('td').forEach((cell) => {
           const printableCell = document.createElement('td');
-          printableCell.innerHTML = cell.innerHTML;
+          printableCell.style.width = '50px';
+          printableCell.style.height = '50px';
           printableCell.style.backgroundColor = window.getComputedStyle(cell).backgroundColor;
           printableRow.appendChild(printableCell);
         });
         printableTable.appendChild(printableRow);
       });
 
-      printWindow.document.write(printableTable.outerHTML);
-      printWindow.document.write('</body></html>');
-      console.log(printWindow.document);
+      printableTable.style.borderCollapse = "collapse";
 
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.document.close();
-        printWindow.close();
-      }, 1000);
+      this.printableDrawing = printableTable;
+
+      printWindow.document.write(printableTable.outerHTML);
+      // printWindow.document.body.appendChild(testElement);
+      printWindow.document.write('</body></html>');
+      console.log(this.printableDrawing);
+
+      // setTimeout(() => {
+      //   printWindow.print({ backgroundGraphics: true });
+      //   printWindow.document.close();
+      //   printWindow.close();
+      // }, 1000);
+     // print({ backgroundGraphics: true });
     },
 
   },
