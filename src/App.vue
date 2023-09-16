@@ -17,7 +17,7 @@
 
     </div>
 
-    <input type="text" v-model="title" />
+    <input type="text" v-model="projectTitle" />
 
     <DrawingTable
         v-if="colors.length > 0"
@@ -30,19 +30,15 @@
     <div class="table-buttons">
       <button @click="readTable"> read table </button>
       <button @click="resetColor"> reset </button>
-      <button @click="createPrintableTable"> download or print </button>
+      <button @click="this.printWindowOpen = true"> download or print </button>
     </div>
 
-    <InstructionsTable
-        v-if="displayInstructions"
-        :tableData="tableData"
+    <InstructionsTable v-if="displayInstructions" />
+
+    <PrintOrDownloadWindow
+        v-if="printWindowOpen"
+        :title="projectTitle"
     />
-
-    <div
-        v-if="!!printableDrawing"
-        v-html="printableDrawing.outerHTML"
-    >
-    </div>
 
   </div>
 </template>
@@ -51,6 +47,7 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
+import PrintOrDownloadWindow from "@/components/PrintOrDownloadWindow.vue";
 
 export default {
   name: "App",
@@ -61,30 +58,15 @@ export default {
       columnsNumber: 1,
       generated: false,
       colors: [],
-      title: 'Project Name',
+      projectTitle: 'Project Name',
       displayInstructions: false,
-      tableData: undefined,
+      printWindowOpen: false,
       printableDrawing: undefined,
     };
   },
 
   methods: {
     readTable() {
-      const tableData = {};
-      const table = document.getElementById("drawing-table");
-      Array.from(table.rows).reverse().forEach((tr) => {
-        const rowOrder = tr.getAttribute("order");
-        const rowSide = tr.getAttribute("side");
-        const cells = Array.from(tr.cells).map((cell) => cell.classList[0]);
-        tableData[rowOrder] = {
-          cells: rowOrder % 2 === 0 ? cells : cells.reverse(),
-          side: rowSide,
-        }
-      });
-      // TODO: fix this (not showing)
-      tableData['first'] = ["ch", Number(this.columnsNumber) + 1];
-      this.tableData = tableData;
-      console.log(this.tableData);
       this.toggleShowInstructions();
     },
     resetColor() {
@@ -148,6 +130,7 @@ export default {
     DrawingTable,
     InstructionsTable,
     ColorsInput,
+    PrintOrDownloadWindow,
   }
 
 };
