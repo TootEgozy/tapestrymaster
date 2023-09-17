@@ -68,6 +68,7 @@ export default {
 <style lang="scss">
 
 .instructions-table-container {
+  font-family: "Arial";
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,12 +81,6 @@ export default {
       border: none;
       text-align: left;
       padding: 5px;
-    }
-    .blue {
-      background-color: blue;
-    }
-    .orange {
-      background-color: orange;
     }
   }
 }

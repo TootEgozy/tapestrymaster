@@ -1,18 +1,32 @@
 <template>
   <div
       v-if="!!printableDrawing"
-      id="print-download-window-container"
+      class="print-download-window-container"
+      ref="printDownloadWindowRef"
   >
-    <div id="window-portal">
       <h3>{{title}}</h3>
       <div v-html="printableDrawing"></div>
       <InstructionsTable />
+    <div class="p-d-buttons-container">
+      <button
+          class="download-button"
+          @click="downloadInstructions"
+      >
+        download
+      </button>
+      <button
+          class="print-button"
+          @click="printInstructions"
+      >
+        print
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import InstructionsTable from "@/components/InstructionsTable.vue";
+import html2canvas from "html2canvas";
 
 export default {
   name: "PrintOrDownloadWindow",
@@ -25,6 +39,7 @@ export default {
   data() {
     return {
       printableDrawing: undefined,
+      window: undefined,
     };
   },
 
@@ -40,6 +55,7 @@ export default {
           printableCell.style.width = '50px';
           printableCell.style.height = '50px';
           printableCell.style.backgroundColor = window.getComputedStyle(cell).backgroundColor;
+          printableCell.style.border = "1px solid black";
           printableRow.appendChild(printableCell);
         });
         printableTable.appendChild(printableRow);
@@ -50,10 +66,25 @@ export default {
       this.printableDrawing = printableTable.outerHTML;
       // print({ backgroundGraphics: true });
     },
+    createTempDownloadLink(url) {
+      const tempLink = document.createElement('a');
+      tempLink.href = url;
+      tempLink.download = `${this.title} tapestry project.jpg`;
+      tempLink.click();
+      tempLink.remove();
+    },
+    async downloadInstructions() {
+      const elementToCapture = this.$refs.printDownloadWindowRef;
+      const canvas = await html2canvas(elementToCapture);
+      const dataURL = canvas.toDataURL('image/jpeg');
+      this.createTempDownloadLink(dataURL);
+    },
+    printInstructions() {
+      //
+    }
   },
 
-  created() {
-    this.readTable();
+  mounted() {
     this.createPrintableDrawing();
   },
 
@@ -66,4 +97,22 @@ export default {
 
 <style lang="scss">
 
+//* TODO: fix style not applying *//
+.print-download-window-container {
+  font-family: "Arial",serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1vh 1vw 1vh 1vw;
+  table {
+    border-collapse: collapse;
+    border: 1px solid orange;
+    td {
+      border: none;
+      text-align: left;
+      padding: 5px;
+    }
+  }
+}
 </style>

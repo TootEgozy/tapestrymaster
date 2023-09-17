@@ -13,7 +13,7 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" />
+      <ColorsInput :ref="'colorsInputRef'" @colorsGenerated="setGeneratedColors" />
 
     </div>
 
@@ -30,15 +30,18 @@
     <div class="table-buttons">
       <button @click="readTable"> read table </button>
       <button @click="resetColor"> reset </button>
-      <button @click="this.printWindowOpen = true"> download or print </button>
+      <button @click="closePrintWindow"> download or print </button>
     </div>
 
     <InstructionsTable v-if="displayInstructions" />
 
-    <PrintOrDownloadWindow
+    <WindowPortal
         v-if="printWindowOpen"
-        :title="projectTitle"
-    />
+        :open="printWindowOpen"
+        @close="printWindowOpen = false"
+    >
+      <PrintOrDownloadWindow :title="projectTitle" />
+    </WindowPortal>
 
   </div>
 </template>
@@ -47,6 +50,7 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
+import WindowPortal from "@/components/WindowPortal.vue";
 import PrintOrDownloadWindow from "@/components/PrintOrDownloadWindow.vue";
 
 export default {
@@ -78,51 +82,10 @@ export default {
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
     },
-
-    createPrintableTable() {
-      // open a new window, with the title "tapastry crochet pattern: ${user title}",
-      // the smaller version of the drawing, and the instructions
-
-      // allow the user to save or print from that window
-      // close the window
-
-
-      const printWindow = window.open('', '', 'width=600,height=600');
-      printWindow.document.open();
-      printWindow.document.write('<html><head><title>Printable Drawing</title>');
-      printWindow.document.write('</head><body>');
-
-      const printableTable = document.createElement('table');
-      const currentTable = document.getElementById('drawing-table');
-
-      currentTable.querySelectorAll('tr').forEach((row) => {
-        const printableRow = document.createElement('tr');
-        row.querySelectorAll('td').forEach((cell) => {
-          const printableCell = document.createElement('td');
-          printableCell.style.width = '50px';
-          printableCell.style.height = '50px';
-          printableCell.style.backgroundColor = window.getComputedStyle(cell).backgroundColor;
-          printableRow.appendChild(printableCell);
-        });
-        printableTable.appendChild(printableRow);
-      });
-
-      printableTable.style.borderCollapse = "collapse";
-
-      this.printableDrawing = printableTable;
-
-      printWindow.document.write(printableTable.outerHTML);
-      // printWindow.document.body.appendChild(testElement);
-      printWindow.document.write('</body></html>');
-      console.log(this.printableDrawing);
-
-      // setTimeout(() => {
-      //   printWindow.print({ backgroundGraphics: true });
-      //   printWindow.document.close();
-      //   printWindow.close();
-      // }, 1000);
-     // print({ backgroundGraphics: true });
-    },
+    closePrintWindow() {
+      console.log('got closing event from print window');
+      this.printWindowOpen = true
+    }
 
   },
 
@@ -130,6 +93,7 @@ export default {
     DrawingTable,
     InstructionsTable,
     ColorsInput,
+    WindowPortal,
     PrintOrDownloadWindow,
   }
 
