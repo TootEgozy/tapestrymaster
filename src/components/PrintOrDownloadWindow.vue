@@ -72,13 +72,12 @@ export default {
       tempLink.click();
       tempLink.remove();
     },
-    downloadInstructions() {
-      // const elementToCapture = this.$refs.printDownloadWindowRef;
-      // const canvas = await html2canvas(elementToCapture, { logging: false });
-      // const dataURL = canvas.toDataURL('image/jpeg');
-      // this.createTempDownloadLink(dataURL);
-      // console.log('emitting a close event in PrintOrDownloadWindow');
-      this.$emit('close', { message: "PrintOrDownloadWindow" });
+    async downloadInstructions() {
+      const elementToCapture = this.$refs.printDownloadWindowRef;
+      const canvas = await html2canvas(elementToCapture, { logging: false });
+      const dataURL = canvas.toDataURL('image/jpeg');
+      this.createTempDownloadLink(dataURL);
+      this.$emit('close');
     },
     printInstructions() {
       //

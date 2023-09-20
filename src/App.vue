@@ -38,7 +38,7 @@
     <WindowPortal
         v-if="printWindowOpen"
         :open="printWindowOpen"
-        @close="closePrintWindow"
+        ref="windowPortalRef"
     >
       <PrintOrDownloadWindow
           :title="projectTitle"
@@ -87,9 +87,8 @@ export default {
     openPrintWindow() {
       this.printWindowOpen = true;
     },
-    closePrintWindow(message) {
-      console.log('closePrintWindow is called in App, here is the event:');
-      console.log(message);
+    closePrintWindow() {
+      this.$refs['windowPortalRef'].closeWindow();
       this.printWindowOpen = false;
     },
 

@@ -17,13 +17,6 @@ export default {
     }
   },
 
-  watch: {
-    'open': function(newVal) {
-      console.log('change in "open" prop in WindowPortal: '+newVal);
-      // if(!newVal) this.closeWindow();
-    }
-  },
-
   methods: {
     openWindow() {
       this.windowRef = window.open("", "", "width=600,height=400,left=200,top=200");
@@ -32,11 +25,9 @@ export default {
     },
 
     closeWindow() {
-      console.log("slot emitted close event in WindowPortal");
       if(this.windowRef) {
         this.windowRef.close();
         this.windowRef = null;
-        this.$emit('close', { message: "WindowPortal" });
       }
     },
   },
