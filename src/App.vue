@@ -30,7 +30,7 @@
     <div class="table-buttons">
       <button @click="readTable"> read table </button>
       <button @click="resetColor"> reset </button>
-      <button @click="closePrintWindow"> download or print </button>
+      <button @click="openPrintWindow"> download or print </button>
     </div>
 
     <InstructionsTable v-if="displayInstructions" />
@@ -38,9 +38,12 @@
     <WindowPortal
         v-if="printWindowOpen"
         :open="printWindowOpen"
-        @close="printWindowOpen = false"
+        @close="closePrintWindow"
     >
-      <PrintOrDownloadWindow :title="projectTitle" />
+      <PrintOrDownloadWindow
+          :title="projectTitle"
+          @close="closePrintWindow"
+      />
     </WindowPortal>
 
   </div>
@@ -65,7 +68,6 @@ export default {
       projectTitle: 'Project Name',
       displayInstructions: false,
       printWindowOpen: false,
-      printableDrawing: undefined,
     };
   },
 
@@ -82,10 +84,14 @@ export default {
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
     },
-    closePrintWindow() {
-      console.log('got closing event from print window');
-      this.printWindowOpen = true
-    }
+    openPrintWindow() {
+      this.printWindowOpen = true;
+    },
+    closePrintWindow(message) {
+      console.log('closePrintWindow is called in App, here is the event:');
+      console.log(message);
+      this.printWindowOpen = false;
+    },
 
   },
 

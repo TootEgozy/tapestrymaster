@@ -64,7 +64,6 @@ export default {
       printableTable.style.borderCollapse = "collapse";
 
       this.printableDrawing = printableTable.outerHTML;
-      // print({ backgroundGraphics: true });
     },
     createTempDownloadLink(url) {
       const tempLink = document.createElement('a');
@@ -73,11 +72,13 @@ export default {
       tempLink.click();
       tempLink.remove();
     },
-    async downloadInstructions() {
-      const elementToCapture = this.$refs.printDownloadWindowRef;
-      const canvas = await html2canvas(elementToCapture);
-      const dataURL = canvas.toDataURL('image/jpeg');
-      this.createTempDownloadLink(dataURL);
+    downloadInstructions() {
+      // const elementToCapture = this.$refs.printDownloadWindowRef;
+      // const canvas = await html2canvas(elementToCapture, { logging: false });
+      // const dataURL = canvas.toDataURL('image/jpeg');
+      // this.createTempDownloadLink(dataURL);
+      // console.log('emitting a close event in PrintOrDownloadWindow');
+      this.$emit('close', { message: "PrintOrDownloadWindow" });
     },
     printInstructions() {
       //
