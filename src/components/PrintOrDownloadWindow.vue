@@ -14,12 +14,6 @@
       >
         download
       </button>
-      <button
-          class="print-button"
-          @click="printInstructions"
-      >
-        print
-      </button>
     </div>
   </div>
 </template>
@@ -77,15 +71,12 @@ export default {
       const canvas = await html2canvas(elementToCapture, { logging: false });
       const dataURL = canvas.toDataURL('image/jpeg');
       this.createTempDownloadLink(dataURL);
-      this.$emit('close');
     },
-    printInstructions() {
-      //
-    }
   },
 
   mounted() {
     this.createPrintableDrawing();
+    this.$emit('pdwindowmounted');
   },
 
   components: {

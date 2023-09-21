@@ -53,6 +53,15 @@ Phase 7 - design
 * make the site pretty
 * make the site compatible with different screen sizes
 
+*****************************************************************************
+// next features - finish download / print feature
+// fix download / print window style
+// fix the size ratio the drawing table
+// add basic vue routing
+// design (use bootstrap or something to make it fit to all screen sizes)
+// bring it to life
+*****************************************************************************
+
 Future features:
 3. create random patterns (this can be a whole new algorithm and cool feature - maybe use an AI or other API).
 4. allow the user to print the instructions.

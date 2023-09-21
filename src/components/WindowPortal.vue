@@ -5,7 +5,6 @@
 </template>
 
 <script>
-// on close, emit close event, listen to it on app and change the prop to close
 export default {
   name: "WindowPortal",
 
@@ -28,7 +27,12 @@ export default {
       if(this.windowRef) {
         this.windowRef.close();
         this.windowRef = null;
+        this.$emit('printWindowClosed');
       }
+    },
+
+    getWindowRef () {
+      return this.windowRef;
     },
   },
 
