@@ -85,5 +85,3 @@ export const condenseArray = (charsArray) => {
   if (sequencesFound) return condenseArray(charsArr);
   return charsArr;
 };
-
-// module.exports = { condenseArray };

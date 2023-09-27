@@ -13,9 +13,11 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" />
+      <ColorsInput :ref="'colorsInputRef'" @colorsGenerated="setGeneratedColors" />
 
     </div>
+
+    <input type="text" v-model="projectTitle" />
 
     <DrawingTable
         v-if="colors.length > 0"
@@ -26,22 +28,40 @@
     />
 
     <div class="table-buttons">
-      <button @click="readTable"> read table </button>
+      <button @click="showInstructions"> show instructions </button>
       <button @click="resetColor"> reset </button>
+      <button @click="downloadInstructions"> download </button>
+      <button @click="printInstructions"> print </button>
+
     </div>
 
-    <InstructionsTable
-        v-if="displayInstructions"
-        :tableData="tableData"
-    />
+    <InstructionsTable v-if="displayInstructions" />
+
+    <WindowPortal
+        v-if="PDWindowOpen"
+        :open="PDWindowOpen"
+        @printWindowClosed="PDWindowOpen = false"
+        ref="windowPortalRef"
+    >
+      <PrintOrDownloadWindow
+          :title="projectTitle"
+          @pdwindowmounted="onPDWindowMounted"
+          ref="pdWindowRef"
+      />
+    </WindowPortal>
 
   </div>
 </template>
 
 <script>
+// TODO: add an emitted event for the colorInput and cell components and for the rows and columns input
+// TODO: that will toggle the instructions component and re-render it if there is any change.
+// TODO: think about if you want to run the whole instructions function every time or just make them disappear
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
+import WindowPortal from "@/components/WindowPortal.vue";
+import PrintOrDownloadWindow from "@/components/PrintOrDownloadWindow.vue";
 
 export default {
   name: "App",
@@ -52,25 +72,14 @@ export default {
       columnsNumber: 1,
       generated: false,
       colors: [],
+      projectTitle: 'Project Name',
       displayInstructions: false,
-      tableData: undefined,
+      PDWindowOpen: false,
     };
   },
 
   methods: {
-    readTable() {
-      const tableData = { 0: ["ch", Number(this.columnsNumber) + 1]};
-      const table = document.getElementById("drawing-table");
-      Array.from(table.rows).reverse().forEach((tr) => {
-        const rowOrder = tr.getAttribute("order");
-        const rowSide = tr.getAttribute("side");
-        const cells = Array.from(tr.cells).map((cell) => cell.classList[0]);
-        tableData[rowOrder] = {
-          cells: rowOrder % 2 === 0 ? cells : cells.reverse(),
-          side: rowSide,
-        }
-      });
-      this.tableData = tableData;
+    showInstructions() {
       this.toggleShowInstructions();
     },
     resetColor() {
@@ -82,13 +91,42 @@ export default {
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
     },
-
+    openPrintWindow() {
+      this.PDWindowOpen = true;
+    },
+    closePDWindow() {
+      this.$refs['windowPortalRef'].closeWindow();
+      this.PDWindowOpen = false;
+    },
+    onPDWindowMounted() {
+      this.resolverPDWindowPromise();
+    },
+    waitForPDWindowMount() {
+      return new Promise((resolve) => {
+        this.resolverPDWindowPromise = resolve;
+      });
+    },
+    async printInstructions() {
+      this.openPrintWindow();
+      await this.waitForPDWindowMount();
+      const windowRef = this.$refs['windowPortalRef'].getWindowRef();
+      windowRef.print();
+      this.closePDWindow();
+    },
+    async downloadInstructions() {
+      this.openPrintWindow();
+      await this.waitForPDWindowMount();
+      await this.$refs['pdWindowRef'].downloadInstructions();
+      this.closePDWindow();
+    },
   },
 
   components: {
     DrawingTable,
     InstructionsTable,
     ColorsInput,
+    WindowPortal,
+    PrintOrDownloadWindow,
   }
 
 };
