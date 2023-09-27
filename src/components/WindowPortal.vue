@@ -19,6 +19,8 @@ export default {
   methods: {
     openWindow() {
       this.windowRef = window.open("", "", "width=600,height=400,left=200,top=200");
+      this.windowRef.document.write(`<html><head><title>&nbsp;</title></head><body>`);
+      this.windowRef.document.write('</body></html>');
       this.windowRef.document.body.appendChild(this.$el);
       this.windowRef.addEventListener('beforeunload', this.closeWindow);
     },

@@ -7,14 +7,6 @@
       <h3>{{title}}</h3>
       <div v-html="printableDrawing"></div>
       <InstructionsTable />
-    <div class="p-d-buttons-container">
-      <button
-          class="download-button"
-          @click="downloadInstructions"
-      >
-        download
-      </button>
-    </div>
   </div>
 </template>
 
@@ -72,10 +64,25 @@ export default {
       const dataURL = canvas.toDataURL('image/jpeg');
       this.createTempDownloadLink(dataURL);
     },
+    //applying styles to elements because the <style> tag doesn't work. TODO: fix the style tag
+    applyStyles() {
+      const windowContainer = document.getElementsByClassName("print-download-window-container")[0];
+      if(windowContainer) {
+        windowContainer.style.fontFamily = "Avenir, Helvetica, Arial, sans-serif";
+        windowContainer.style.display = "flex";
+        windowContainer.style.alignItems = "center";
+        windowContainer.style.justifyContent = "center";
+        windowContainer.style.flexDirection = "column";
+      }
+    }
+  },
+
+  created() {
+    this.createPrintableDrawing();
   },
 
   mounted() {
-    this.createPrintableDrawing();
+    this.applyStyles();
     this.$emit('pdwindowmounted');
   },
 
@@ -87,23 +94,4 @@ export default {
 </script>
 
 <style lang="scss">
-
-//* TODO: fix style not applying *//
-.print-download-window-container {
-  font-family: "Arial",serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 1vh 1vw 1vh 1vw;
-  table {
-    border-collapse: collapse;
-    border: 1px solid orange;
-    td {
-      border: none;
-      text-align: left;
-      padding: 5px;
-    }
-  }
-}
 </style>
