@@ -61,13 +61,17 @@ export default {
         }
       }
     },
-      toggleMouse(){
-        this.mousedown = !this.mousedown;
-      },
-      dropMouse(){
-        this.mousedown = false;
-      }
+    toggleMouse(){
+      this.mousedown = !this.mousedown;
     },
+    dropMouse(){
+      this.mousedown = false;
+    },
+    setMouseColorForCell(color) {
+      const cellRefs = Object.keys(this.$refs).filter((refName) => refName.includes('cellRef'));
+      cellRefs.forEach((ref) => this.$refs[`${ref}`].setMouseColor(color));
+    },
+  },
 
   components: {
     TableCell,

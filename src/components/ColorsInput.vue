@@ -2,7 +2,12 @@
 
   <div class="colors-inputs-container">
 
-    <div class="single-color-inputs-container" v-for="(color, i) in colors" :key="i">
+    <div
+        class="single-color-inputs-container"
+        v-for="(color, i) in colors" :key="color.id"
+        @click.stop.prevent="selectColor"
+        :id="color.id"
+    >
 
       <input
           v-if="displayColorNames"
@@ -108,7 +113,15 @@ export default {
     },
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;
-    }
+    },
+    selectColor(e) {
+      const inputContainer = e.target.className === "single-color-inputs-container" ? e.target : e.target.parentElement;
+      const allColorInputContainers = document.getElementsByClassName("single-color-inputs-container");
+      Object.values(allColorInputContainers).forEach((element) => element.classList.remove('focus'));
+      inputContainer.classList.add("focus");
+      const color = this.colors.find((c) => c.id === inputContainer.id);
+      this.$emit('colorSelected', color);
+    },
   },
 
   watch: {
@@ -160,6 +173,10 @@ export default {
     margin-top: 5px;
 
   }
+}
+
+.focus {
+  border: 2px solid black;
 }
 
 </style>

@@ -19,19 +19,26 @@ export default {
     return {
       colorIndex: 0,
       currentColor: { RGB: '000000'},
+      mouseColor: undefined,
     }
   },
 
   methods: {
     changeColor() {
-      this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
-      this.currentColor = this.colors[this.colorIndex];
+      if(this.mouseColor) this.currentColor = this.mouseColor;
+      else {
+        this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
+        this.currentColor = this.colors[this.colorIndex];
+      }
     },
     resetColor() {
       this.currentColor = this.colors[0];
     },
     handleMouseOver() {
       if(this.mousedown) this.changeColor();
+    },
+    setMouseColor(color) {
+      this.mouseColor = color;
     }
   },
 
