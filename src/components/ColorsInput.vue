@@ -26,7 +26,7 @@
           v-model="colors[i].RGB"
       >
 
-      <button @click="removeColor(color)">-</button>
+      <button name="delete-color-btn" @click="removeColor(color)">-</button>
 
     </div>
 
@@ -114,10 +114,14 @@ export default {
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;
     },
-    selectColor(e) {
-      const inputContainer = e.target.className === "single-color-inputs-container" ? e.target : e.target.parentElement;
+    removeFocusClass() {
       const allColorInputContainers = document.getElementsByClassName("single-color-inputs-container");
       Object.values(allColorInputContainers).forEach((element) => element.classList.remove('focus'));
+    },
+    selectColor(e) {
+      if(e.target.name === "delete-color-btn") return;
+      const inputContainer = e.target.className === "single-color-inputs-container" ? e.target : e.target.parentElement;
+      this.removeFocusClass();
       inputContainer.classList.add("focus");
       const color = this.colors.find((c) => c.id === inputContainer.id);
       this.$emit('colorSelected', color);

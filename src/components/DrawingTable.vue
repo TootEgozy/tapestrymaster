@@ -20,6 +20,7 @@
             :colors="colors"
             :ref="`cellRef${rowIndex}-${columnIndex}`"
             :mousedown="mousedown"
+            :initialMouseColor="mouseColor"
         />
       </tr>
     </table>
@@ -39,6 +40,7 @@ export default {
   data() {
     return {
       mousedown: false,
+      mouseColor: undefined,
     }
   },
 
@@ -67,9 +69,10 @@ export default {
     dropMouse(){
       this.mousedown = false;
     },
-    setMouseColorForCell(color) {
+     setMouseColorForCell(color) {
+      this.mouseColor = color;
       const cellRefs = Object.keys(this.$refs).filter((refName) => refName.includes('cellRef'));
-      cellRefs.forEach((ref) => this.$refs[`${ref}`].setMouseColor(color));
+      cellRefs.forEach((ref) => this.$refs[`${ref}`][0].setMouseColor(color));
     },
   },
 
