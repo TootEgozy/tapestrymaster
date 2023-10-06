@@ -10,7 +10,7 @@
 </template>
 
 <script>
-
+import { getRawTableData } from "@/utils/getRawTableData";
 import { condenseArray } from "@/utils/condenseArray";
 
 export default {
@@ -24,29 +24,40 @@ export default {
     }
   },
 
+  // TODO: workflow
+  // 1. write a util function to read the raw table data (this will be useful for dynamic color names) - done
+  // 2. use the raw table data while reading the table - in progress: there is a bug, the cells array is empty in the reversed table
+  // 3. create a drawing object in local storage and save the table data to it
+  // 4. reset the drawing on reset
+  // 5. update the drawing on color or dimensional change
+  // 6. look for the drawing on mount and if it exist, create the table from it
+
   methods: {
-    readDrawingTable() {
-      const tableData = {};
-      const table = document.getElementById("drawing-table");
-      let columnsNumber = undefined;
-      Array.from(table.rows).reverse().forEach((tr) => {
-        const rowOrder = tr.getAttribute("order");
-        const rowSide = tr.getAttribute("side");
-        const cells = Array.from(tr.cells).map((cell) => cell.classList[0]);
-        tableData[rowOrder] = {
-          cells: rowOrder % 2 === 0 ? cells : cells.reverse(),
-          side: rowSide,
+    reverseTable(table) {
+      const reversed = {}
+      table.rows.reverse().forEach((tr) => {
+        const cells =  tr.order % 2 === 0 ? tr.cells : tr.cells.reverse();
+        console.log(cells);
+        reversed[tr.order] = {
+          cells: cells, // TODO: why is this empty?
+          side: tr.side,
         }
-        if(!columnsNumber) columnsNumber = cells.length;
       });
-      tableData[0] = ["ch", Number(columnsNumber) + 1];
-      this.tableData = tableData;
+      console.log(reversed);
+      return reversed;
+    },
+    readDrawingTable() {
+      const reversedTable = this.reverseTable(getRawTableData());
+      reversedTable[0] = ["ch", Number(reversedTable[1].cells.length) + 1];
+      this.tableData = reversedTable;
+      //console.log(this.tableData);
     },
     condenseTableData() {
       this.condensedTableData = Object.keys(this.tableData).map((rowNumber) => {
         const rowData = this.tableData[rowNumber];
+        //console.log(rowData);
         if (!rowData.cells) return this.tableRows.push(`${rowNumber}: ${rowData[0]} ${rowData[1]}`);
-        const condensedCellData = condenseArray(rowData.cells);
+        const condensedCellData = condenseArray(rowData.cells.map((cell) => cell.genericName));
         const rowDataString = `${rowNumber}: ${rowData.side}: ${condensedCellData.toString()}`
         this.tableRows.push(rowDataString);
         rowData.cells = condensedCellData;

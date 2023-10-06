@@ -1,7 +1,9 @@
 <template>
   <td
+      :id="generateId()"
       :style="{ backgroundColor: currentColor.RGB}"
       :class="currentColor.genericName"
+      v-bind:data-name = "currentColor.name"
       @click.prevent="changeColor"
       @mouseover.prevent="handleMouseOver"
   >
@@ -9,6 +11,8 @@
 </template>
 
 <script>
+
+import {v4 as uuid} from 'uuid';
 
 export default {
   name: 'TableCell',
@@ -24,6 +28,9 @@ export default {
   },
 
   methods: {
+    generateId() {
+      return uuid();
+    },
     changeColor() {
       this.currentColor = this.mouseColor;
     },
