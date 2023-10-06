@@ -13,38 +13,44 @@
 export default {
   name: 'TableCell',
 
-  props: ['colors', 'mousedown'],
+  props: ['colors', 'mousedown', 'initialMouseColor'],
 
   data() {
     return {
       colorIndex: 0,
       currentColor: { RGB: '000000'},
+      mouseColor: this.initialMouseColor,
     }
   },
 
   methods: {
     changeColor() {
-      this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
-      this.currentColor = this.colors[this.colorIndex];
+      this.currentColor = this.mouseColor;
     },
     resetColor() {
       this.currentColor = this.colors[0];
     },
     handleMouseOver() {
       if(this.mousedown) this.changeColor();
+    },
+    setMouseColor(color) {
+      this.mouseColor = color;
     }
   },
 
   watch: {
     'colors.length': function() {
       const currentColorDeleted = !this.colors.find((color) => color.id === this.currentColor.id);
+      const mouseColorDeleted = !this.colors.find((color) => color.id === this.mouseColor.id);
       if(currentColorDeleted) this.currentColor = this.colors[0];
+      if(mouseColorDeleted) this.mouseColor = this.colors[0];
       this.colorIndex = this.colors.findIndex((color) => color.id === this.currentColor.id);
     },
   },
 
   mounted() {
     this.currentColor = this.colors[this.colorIndex];
+    this.mouseColor = this.initialMouseColor || this.colors[this.colorIndex];
   },
 
 }

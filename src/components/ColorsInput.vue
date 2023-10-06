@@ -2,7 +2,12 @@
 
   <div class="colors-inputs-container">
 
-    <div class="single-color-inputs-container" v-for="(color, i) in colors" :key="i">
+    <div
+        class="single-color-inputs-container"
+        v-for="(color, i) in colors" :key="color.id"
+        @click.stop.prevent="selectColor"
+        :id="color.id"
+    >
 
       <input
           v-if="displayColorNames"
@@ -21,7 +26,7 @@
           v-model="colors[i].RGB"
       >
 
-      <button @click="removeColor(color)">-</button>
+      <button name="delete-color-btn" @click="removeColor(color)">-</button>
 
     </div>
 
@@ -57,6 +62,7 @@ export default {
       lastLetterCode: 65,
       availableColors: namedColors,
       displayColorNames: true,
+      focusedColorId: null,
     }
   },
 
@@ -80,6 +86,7 @@ export default {
     async initialiseColors() {
       const newColors = [this.generateColor(0), this.generateColor(1)];
       newColors.forEach((color) => this.colors.push(color));
+      this.focusedColorId = newColors[1].id;
     },
     // resetColorName(e) {
     //   const colorIndex = this.colors.findIndex((color) => color.genericName === e.target.className);
@@ -101,6 +108,7 @@ export default {
       const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
       this.colors.splice(toRemoveIndex, 1);
       this.resetColorsGenericNames();
+      if(colorToRemove.id === this.focusedColorId) this.focusOnColor(this.colors[0]);
     },
     addNewColor() {
       const newColor = this.generateColor(this.colors.length > 0 ? this.colors.length : 1);
@@ -108,7 +116,28 @@ export default {
     },
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;
-    }
+    },
+    removeFocusClass() {
+      const allColorInputContainers = document.getElementsByClassName("single-color-inputs-container");
+      Object.values(allColorInputContainers).forEach((element) => element.classList.remove('focus'));
+    },
+    focusOnColor(color, colorInputElement) {
+      let element = colorInputElement;
+      if(!colorInputElement) {
+        element = document.getElementById(this.colors[0].id);
+      }
+      element.classList.add("focus");
+      this.focusedColorId = color.id;
+      this.$emit('colorSelected', color);
+    },
+    selectColor(e) {
+      if(e.target.name === "delete-color-btn") return;
+      if(Object.values(e.target.classList).includes("focus")) return;
+      const inputContainer = e.target.className === "single-color-inputs-container" ? e.target : e.target.parentElement;
+      const color = this.colors.find((c) => c.id === inputContainer.id);
+      this.removeFocusClass();
+      this.focusOnColor(color, inputContainer);
+    },
   },
 
   watch: {
@@ -160,6 +189,10 @@ export default {
     margin-top: 5px;
 
   }
+}
+
+.focus {
+  border: 2px solid black;
 }
 
 </style>
