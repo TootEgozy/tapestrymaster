@@ -13,7 +13,11 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput :ref="'colorsInputRef'" @colorsGenerated="setGeneratedColors" />
+      <ColorsInput
+          :ref="'colorsInputRef'"
+          @colorsGenerated="setGeneratedColors"
+          @colorSelected="handleColorSelected"
+      />
 
     </div>
 
@@ -119,6 +123,10 @@ export default {
       await this.$refs['pdWindowRef'].downloadInstructions();
       this.closePDWindow();
     },
+
+    handleColorSelected(color) {
+      this.$refs['drawingTableRef'].setMouseColorForCell(color);
+    }
   },
 
   components: {
