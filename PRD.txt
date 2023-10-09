@@ -77,3 +77,7 @@ Future features:
 15. add the "I'm looking for inspiration" and "I'm looking for a challenge" tags which
     will offer ideas for projects (see if ravlery has an API)
 16. allow the user to insert gauge measurements and display the estimated final project size - "Project size calculator"
+17. add a ruler to the table to show the grid rows and columns by numbers
+18. add a v-marker checker of every line of instructions that the user can check for finished rows
+19. add the ability to highlight a row of instructions by standing on it with the mouse and highlight the
+corresponding row in the table - automatically highlight the next row in the print
