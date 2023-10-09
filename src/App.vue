@@ -123,6 +123,7 @@ export default {
       await this.$refs['pdWindowRef'].downloadInstructions();
       this.closePDWindow();
     },
+
     handleColorSelected(color) {
       this.$refs['drawingTableRef'].setMouseColorForCell(color);
     }
