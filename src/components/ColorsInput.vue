@@ -2,7 +2,12 @@
 
   <div class="colors-inputs-container">
 
-    <div class="single-color-inputs-container" v-for="(color, i) in colors" :key="i">
+    <div class="single-color-inputs-container"
+         v-for="(color, i) in colors"
+         :key="i"
+         :ref="`colors-elements`"
+         @click="colorSelected(i)"
+    >
 
       <input
           v-if="displayColorNames"
@@ -54,6 +59,8 @@ export default {
   data() {
     return {
       colors: [],
+      selectedColorIndex: 0,
+      selectedColor: {},
       lastLetterCode: 65,
       availableColors: namedColors,
       displayColorNames: true,
@@ -77,9 +84,26 @@ export default {
         RGB: color.RGB,
       };
     },
+
+    // called once on page load to generate 2 random colors for canvas
     async initialiseColors() {
-      const newColors = [this.generateColor(0), this.generateColor(1)];
+      const colorA = this.generateColor(0);
+      const colorB = this.generateColor(1);
+      const newColors = [colorA, colorB];
       newColors.forEach((color) => this.colors.push(color));
+      this.selectedColor = newColors[1];
+      this.selectedColorIndex = 1;
+      this.$emit('changeColor', this.selectedColor);
+    },
+
+    colorSelected(newColorIndex) {
+      console.log(this.$refs[`colors-elements`])
+      this.selectedColor = this.colors[newColorIndex];
+      this.$refs[`colors-elements`][this.selectedColorIndex].classList.remove('focus');
+      this.$refs[`colors-elements`][newColorIndex].classList.add('focus');
+      this.selectedColorIndex = newColorIndex;
+
+      this.$emit('changeColor', this.selectedColor);
     },
     // resetColorName(e) {
     //   const colorIndex = this.colors.findIndex((color) => color.genericName === e.target.className);
@@ -120,6 +144,7 @@ export default {
   mounted() {
     this.initialiseColors();
     this.$emit('colorsGenerated', this.colors);
+    this.$emit('colorSelected', this.colors[1]);
   },
 
 }
@@ -133,6 +158,7 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
+  box-sizing: border-box;
 
   .single-color-inputs-container {
     display: flex;
@@ -159,6 +185,10 @@ export default {
     font-size: 20px;
     margin-top: 5px;
 
+  }
+
+  .focus {
+    border: 3px solid black;
   }
 }
 

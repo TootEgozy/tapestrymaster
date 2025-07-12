@@ -13,7 +13,7 @@
 export default {
   name: 'TableCell',
 
-  props: ['colors', 'mousedown'],
+  props: ['colors', 'selectedColor', 'mousedown'],
 
   data() {
     return {
@@ -24,8 +24,9 @@ export default {
 
   methods: {
     changeColor() {
-      this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
-      this.currentColor = this.colors[this.colorIndex];
+      // this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
+      // this.currentColor = this.colors[this.colorIndex];
+      this.currentColor = this.selectedColor;
     },
     resetColor() {
       this.currentColor = this.colors[0];

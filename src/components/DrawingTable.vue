@@ -18,6 +18,7 @@
             v-for="(column, columnIndex) in createArray(columns)"
             :key="column"
             :colors="colors"
+            :selectedColor="selectedColor"
             :ref="`cellRef${rowIndex}-${columnIndex}`"
             :mousedown="mousedown"
         />
@@ -34,7 +35,7 @@ import TableCell from "@/components/TableCell.vue";
 export default {
   name: 'DrawingTable',
 
-  props: ['rows', 'columns', 'colors'],
+  props: ['rows', 'columns', 'colors', 'selectedColor'],
 
   data() {
     return {

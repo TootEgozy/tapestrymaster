@@ -1,0 +1,19 @@
+1. user is able to select color to draw with
+2. read table button resets the instructions and not just toggle it
+3. add "chain x" to the beginning of the instructions
+4. instructions can include specific colors or a generic name
+5. each table cell is always a cube
+6. the table max width and max height is fixed (table cells adjust to fit it)
+7. instructions open in a mini window
+8. mini window allows printing, export as a pdf, sending through apps
+
+
+future
+add move painting option (click and drag across the table)
+
+allow pixelating a pictrue
+
+enable reset of a single color to base
+
+allow helping tools such as shapes (circle, square, line)
+

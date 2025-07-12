@@ -13,7 +13,7 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" />
+      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" @colorSelected="setSelectedColor"/>
 
     </div>
 
@@ -22,6 +22,7 @@
         :rows="rowsNumber"
         :columns="columnsNumber"
         :colors="colors"
+        :selectedColor="selectedColor"
         :ref="'drawingTableRef'"
     />
 
@@ -52,6 +53,7 @@ export default {
       columnsNumber: 1,
       generated: false,
       colors: [],
+      selectedColor: {},
       displayInstructions: false,
       tableData: undefined,
     };
@@ -82,6 +84,11 @@ export default {
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
     },
+
+    setSelectedColor(selectedColor) {
+      this.selectedColor = selectedColor;
+      //TODO: emit the selected color to cell or check how it reaches cell
+    }
 
   },
 
