@@ -149,7 +149,6 @@ export default {
     this.$emit('colorsGenerated', this.colors);
     this.$emit('colorSelected', this.colors[1]);
   },
-
 }
 </script>
 
