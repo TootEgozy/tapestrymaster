@@ -13,7 +13,7 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" @colorSelected="setSelectedColor"/>
+      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" @changeColor="setSelectedColor"/>
 
     </div>
 
@@ -87,7 +87,6 @@ export default {
 
     setSelectedColor(selectedColor) {
       this.selectedColor = selectedColor;
-      //TODO: emit the selected color to cell or check how it reaches cell
     }
 
   },

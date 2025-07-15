@@ -97,13 +97,15 @@ export default {
     },
 
     colorSelected(newColorIndex) {
-      console.log(this.$refs[`colors-elements`])
       this.selectedColor = this.colors[newColorIndex];
-      this.$refs[`colors-elements`][this.selectedColorIndex].classList.remove('focus');
-      this.$refs[`colors-elements`][newColorIndex].classList.add('focus');
+      this.passFocusClass(newColorIndex, this.selectedColorIndex);
       this.selectedColorIndex = newColorIndex;
-
       this.$emit('changeColor', this.selectedColor);
+    },
+
+    passFocusClass(newColorIndex, oldColorIndex) {
+      this.$refs[`colors-elements`][oldColorIndex].classList.remove('focus');
+      this.$refs[`colors-elements`][newColorIndex].classList.add('focus');
     },
     // resetColorName(e) {
     //   const colorIndex = this.colors.findIndex((color) => color.genericName === e.target.className);
@@ -141,8 +143,9 @@ export default {
     }
   },
 
-  mounted() {
-    this.initialiseColors();
+  async mounted() {
+    await this.initialiseColors();
+    this.passFocusClass(1, 0);
     this.$emit('colorsGenerated', this.colors);
     this.$emit('colorSelected', this.colors[1]);
   },

@@ -26,6 +26,7 @@ export default {
     changeColor() {
       // this.colorIndex = (this.colorIndex === this.colors.length - 1) ? 0 : this.colorIndex + 1;
       // this.currentColor = this.colors[this.colorIndex];
+      console.log("in cell, the color from parent is: "+this.selectedColor);
       this.currentColor = this.selectedColor;
     },
     resetColor() {
