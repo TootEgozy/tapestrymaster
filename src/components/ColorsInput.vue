@@ -104,8 +104,8 @@ export default {
     },
 
     passFocusClass(newColorIndex, oldColorIndex) {
-      this.$refs[`colors-elements`][oldColorIndex].classList.remove('focus');
-      this.$refs[`colors-elements`][newColorIndex].classList.add('focus');
+      this.$refs[`colors-elements`][oldColorIndex]?.classList.remove('focus');
+      this.$refs[`colors-elements`][newColorIndex]?.classList.add('focus');
     },
     // resetColorName(e) {
     //   const colorIndex = this.colors.findIndex((color) => color.genericName === e.target.className);
@@ -123,14 +123,22 @@ export default {
         return color;
       });
     },
+
     removeColor(colorToRemove) {
       const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
       this.colors.splice(toRemoveIndex, 1);
       this.resetColorsGenericNames();
+      // if(toRemoveIndex === this.selectedColorIndex && this.colors.length > 0) {
+      //   this.$nextTick(() => this.colorSelected(0))
+      // }
     },
+
     addNewColor() {
       const newColor = this.generateColor(this.colors.length > 0 ? this.colors.length : 1);
       this.colors.push(newColor);
+      if(this.colors.length === 1) {
+        this.$nextTick(() => this.colorSelected(0));
+      }
     },
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;
