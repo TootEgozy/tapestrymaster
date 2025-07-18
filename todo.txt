@@ -1,5 +1,5 @@
-1. user is able to select color to draw with
-2. read table button resets the instructions and not just toggle it
+V 1. user is able to select color to draw with
+V 2. read table button resets the instructions and not just toggle it
 3. add "chain x" to the beginning of the instructions
 4. instructions can include specific colors or a generic name
 5. each table cell is always a cube

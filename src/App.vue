@@ -13,7 +13,11 @@
         <input type="number" min="0" id="columns" v-model="columnsNumber"/>
       </div>
 
-      <ColorsInput :ref="'colorsInputRef'"  @colorsGenerated="setGeneratedColors" @changeColor="setSelectedColor"/>
+      <ColorsInput
+          :ref="'colorsInputRef'"
+          @colorsGenerated="setGeneratedColors"
+          @changeColor="setSelectedColor"
+      />
 
     </div>
 
@@ -24,16 +28,18 @@
         :colors="colors"
         :selectedColor="selectedColor"
         :ref="'drawingTableRef'"
+        @click="displayInstructions = false"
     />
 
     <div class="table-buttons">
-      <button @click="readTable"> read table </button>
+      <button @click="createInstructions"> create instructions </button>
       <button @click="resetColor"> reset </button>
     </div>
 
     <InstructionsTable
         v-if="displayInstructions"
         :tableData="tableData"
+        @hideInstructions="toggleShowInstructions"
     />
 
   </div>
@@ -60,7 +66,7 @@ export default {
   },
 
   methods: {
-    readTable() {
+    createInstructions() {
       const tableData = { 0: ["ch", Number(this.columnsNumber) + 1]};
       const table = document.getElementById("drawing-table");
       Array.from(table.rows).reverse().forEach((tr) => {
@@ -73,7 +79,7 @@ export default {
         }
       });
       this.tableData = tableData;
-      this.toggleShowInstructions();
+      if (this.displayInstructions === false) this.toggleShowInstructions();
     },
     resetColor() {
       this.$refs[`drawingTableRef`].resetCellsColor();

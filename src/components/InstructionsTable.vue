@@ -6,6 +6,7 @@
         <td>{{ row }}</td>
       </tr>
     </table>
+    <button @click="hideInstructions">hide</button>
   </div>
 </template>
 
@@ -40,6 +41,10 @@ export default {
         rowData.cells = condensedCellData;
         return rowData;
       });
+    },
+
+    hideInstructions() {
+      this.$emit("hideInstructions");
     }
   },
 
