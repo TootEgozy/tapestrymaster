@@ -26,7 +26,7 @@
           v-model="colors[i].RGB"
       >
 
-      <button @click="removeColor(color)">-</button>
+      <button @click.stop="removeColor(color)">-</button>
 
     </div>
 
@@ -126,11 +126,17 @@ export default {
 
     removeColor(colorToRemove) {
       const toRemoveIndex = this.colors.findIndex((color) => color.id === colorToRemove.id);
+      const selectedRemoved = toRemoveIndex === this.selectedColorIndex;
       this.colors.splice(toRemoveIndex, 1);
       this.resetColorsGenericNames();
-      // if(toRemoveIndex === this.selectedColorIndex && this.colors.length > 0) {
-      //   this.$nextTick(() => this.colorSelected(0))
-      // }
+      this.$nextTick(() => {
+        if(selectedRemoved || this.colors.length === 1) {
+          this.colorSelected(0);
+        } else if (this.colors.length === 0) {
+          this.selectedColor = {};
+          this.selectedColorIndex = -1;
+        }
+      });
     },
 
     addNewColor() {
