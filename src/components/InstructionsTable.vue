@@ -34,11 +34,15 @@ export default {
     condenseTableData() {
       this.condensedTableData = Object.keys(this.tableData).map((rowNumber) => {
         const rowData = this.tableData[rowNumber];
-        if (!rowData.cells) return rowData;
-        const condensedCellData = condenseArray(rowData.cells);
-        const rowDataString = `${rowNumber}: ${rowData.side}: ${condensedCellData.toString()}`
+        let rowDataString = '';
+        if (rowData.cells) {
+          const condensedCellData = condenseArray(rowData.cells);
+          rowDataString = `${rowNumber}: ${rowData.side}: ${condensedCellData.toString()}`
+          rowData.cells = condensedCellData;
+        } else {
+          rowDataString = `${rowNumber}: chain ${rowData[1]}`;
+        }
         this.tableRows.push(rowDataString);
-        rowData.cells = condensedCellData;
         return rowData;
       });
     },
