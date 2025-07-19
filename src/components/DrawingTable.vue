@@ -87,7 +87,7 @@ export default {
   margin: 1vh 1vw 1vh 1vw;
   #drawing-table {
     min-width: 50vw;
-    min-height: 50vh;
+    min-height: 70vh;
     border-collapse: collapse;
     td {
       border: solid 2px black;

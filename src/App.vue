@@ -35,6 +35,7 @@
     <div class="table-buttons">
       <button @click="createInstructions"> create instructions </button>
       <button @click="resetColor"> reset </button>
+      <button @click="openInstructionsInNewWindow">open instructions window</button>
     </div>
 
     <InstructionsTable
@@ -107,7 +108,41 @@ export default {
 
     setSelectedColor(selectedColor) {
       this.selectedColor = selectedColor;
-    }
+    },
+
+    openInstructionsInNewWindow() {
+      if (!this.tableData) this.createInstructions();
+
+      const instructionsHtml = `
+      <html>
+        <head>
+          <title>Instructions</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            table { border-collapse: collapse; border: 1px solid orange; }
+            td { border: none; padding: 5px; text-align: left; }
+          </style>
+        </head>
+        <body>
+          <h3>Instructions</h3>
+          <table>
+            ${Object.entries(this.tableData).map(([rowNumber, row]) => {
+        if (row.cells) {
+          const cellsStr = row.cells.join(', ');
+          return `<tr><td>${rowNumber}: ${row.side}: ${cellsStr}</td></tr>`;
+        } else {
+          return `<tr><td>${rowNumber}: chain ${row[1]}</td></tr>`;
+        }
+      }).join('')}
+          </table>
+        </body>
+      </html>
+    `;
+
+      const newWindow = window.open('', '_blank', 'width=600,height=400');
+      newWindow.document.write(instructionsHtml);
+      newWindow.document.close();
+    },
 
   },
 
