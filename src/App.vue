@@ -17,6 +17,7 @@
           :ref="'colorsInputRef'"
           @colorsGenerated="setGeneratedColors"
           @changeColor="setSelectedColor"
+          @toggleDisplayColorNames="toggleDisplayColorNames"
       />
 
     </div>
@@ -39,6 +40,7 @@
     <InstructionsTable
         v-if="displayInstructions"
         :tableData="tableData"
+        :key="instructionsKey"
         @hideInstructions="toggleShowInstructions"
     />
 
@@ -61,7 +63,9 @@ export default {
       colors: [],
       selectedColor: {},
       displayInstructions: false,
+      instructionsKey: 0,
       tableData: undefined,
+      displayColorNames: true,
     };
   },
 
@@ -72,7 +76,10 @@ export default {
       Array.from(table.rows).reverse().forEach((tr) => {
         const rowOrder = tr.getAttribute("order");
         const rowSide = tr.getAttribute("side");
-        const cells = Array.from(tr.cells).map((cell) => cell.classList[0]);
+        const cells = Array.from(tr.cells).map((cell) => {
+          if (this.displayColorNames) return cell.classList[1];
+          return cell.classList[0];
+        });
         tableData[rowOrder] = {
           cells: rowOrder % 2 === 0 ? cells : cells.reverse(),
           side: rowSide,
@@ -80,6 +87,7 @@ export default {
       });
       this.tableData = tableData;
       if (this.displayInstructions === false) this.toggleShowInstructions();
+      this.instructionsKey++;
     },
     resetColor() {
       this.$refs[`drawingTableRef`].resetCellsColor();
@@ -87,6 +95,12 @@ export default {
     toggleShowInstructions () {
       this.displayInstructions = !this.displayInstructions;
     },
+
+    toggleDisplayColorNames() {
+      this.displayColorNames = !this.displayColorNames;
+      if (this.displayInstructions) this.createInstructions();
+    },
+
     setGeneratedColors(colorsFromInput) {
       this.colors = colorsFromInput;
     },

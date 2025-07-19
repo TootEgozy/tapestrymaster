@@ -148,6 +148,7 @@ export default {
     },
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;
+      this.$emit('toggleDisplayColorNames');
     }
   },
 

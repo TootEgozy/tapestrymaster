@@ -1,7 +1,7 @@
 <template>
   <td
       :style="{ backgroundColor: currentColor.RGB}"
-      :class="currentColor.genericName"
+      :class="[currentColor.genericName, currentColor.name]"
       @click.prevent="changeColor"
       @mouseover.prevent="handleMouseOver"
   >
