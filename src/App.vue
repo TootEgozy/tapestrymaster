@@ -170,4 +170,34 @@ export default {
     font-family: Arial, Helvetica, sans-serif;
   }
 }
+
+.app-body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2vh 0;
+  gap: 2vh;
+}
+
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vh;
+  margin-bottom: 1vh;
+}
+
+.table-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1vh;
+}
+
+#drawing-table {
+  margin: 0 auto;
+}
+
 </style>

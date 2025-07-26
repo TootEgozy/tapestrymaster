@@ -2,7 +2,9 @@ V 1. user is able to select color to draw with
 V 2. read table button resets the instructions and not just toggle it
 V 3. add "chain x" to the beginning of the instructions
 V 4. instructions can include specific colors or a generic name
-5. each table cell is always a cube
+V 5. each table cell is always a square
+**. allow a button which toggle the scale up of the table
+    so that it's larger on the screen
 6. the table max width and max height is fixed (table cells adjust to fit it)
 7. instructions open in a mini window
 8. mini window allows printing, export as a pdf, sending through apps
@@ -11,7 +13,7 @@ V 4. instructions can include specific colors or a generic name
 future
 add move painting option (click and drag across the table)
 
-allow pixelating a pictrue
+allow pixelating a picture
 
 enable reset of a single color to base
 

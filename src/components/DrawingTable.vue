@@ -21,6 +21,7 @@
             :selectedColor="selectedColor"
             :ref="`cellRef${rowIndex}-${columnIndex}`"
             :mousedown="mousedown"
+            :size="cellSize + 'px'"
         />
       </tr>
     </table>
@@ -40,7 +41,16 @@ export default {
   data() {
     return {
       mousedown: false,
+      cellSize: 0,
     }
+  },
+
+  mounted() {
+    this.calculateCellSize();
+    window.addEventListener("resize", this.calculateCellSize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.calculateCellSize);
   },
 
   watch: {
@@ -52,8 +62,13 @@ export default {
     createArray(length) {
       return Array.from(Array(length).keys());
     },
+    calculateCellSize() {
+      const maxTableSize = window.innerWidth * 0.30; // vw for minimum cell dimensions
+      const maxCells = Math.max(this.rows, this.columns);
+      this.cellSize = Math.floor(maxTableSize / maxCells);
+    },
     regenerateTable() {
-      // force vue to regenerate the table
+      this.calculateCellSize();
     },
     resetCellsColor() {
       for (let i = 0; i < this.rows; i++) {
@@ -79,25 +94,20 @@ export default {
 
 <style lang="scss">
 
-/* TODO: make the td a fixed square (in relation to width or length or whatever) and the table width and height dynamic */
 .drawing-table-container {
+  width: 30vw;
+  height: 30vw;
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin: 1vh 1vw 1vh 1vw;
+  align-items: center;
+  margin: 0 auto;
+  padding: 1rem;
+
   #drawing-table {
-    min-width: 50vw;
-    min-height: 70vh;
+    table-layout: fixed;
     border-collapse: collapse;
-    td {
-      border: solid 2px black;
-    }
-    .blue {
-      background-color: blue;
-    }
-    .orange {
-      background-color: orange;
-    }
+    margin: 0;
+    padding: 0;
   }
 }
 
