@@ -1,6 +1,8 @@
 <template>
   <div class="app-body">
 
+    <ImageConverter/>
+
     <div class="inputs-container">
       <p>
         Insert the desired measurements for your project
@@ -52,6 +54,7 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
+import ImageConverter from "@/components/ImageConverter.vue";
 
 export default {
   name: "App",
@@ -147,6 +150,7 @@ export default {
   },
 
   components: {
+    ImageConverter,
     DrawingTable,
     InstructionsTable,
     ColorsInput,

@@ -5,7 +5,7 @@ V 4. instructions can include specific colors or a generic name
 V 5. each table cell is always a square
 **. allow a button which toggle the scale up of the table
     so that it's larger on the screen
-6. the table max width and max height is fixed (table cells adjust to fit it)
+V 6. the table max width and max height is fixed (table cells adjust to fit it)
 7. instructions open in a mini window
 8. mini window allows printing, export as a pdf, sending through apps
 
