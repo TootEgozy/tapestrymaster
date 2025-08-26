@@ -1,4 +1,5 @@
 # tapestrymaster
+#### Convert a drawing or an image to tapestry crochet instructions!
 
 ## Project setup
 ```
