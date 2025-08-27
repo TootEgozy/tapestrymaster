@@ -12,11 +12,66 @@
 
 <script setup>
 import { ref } from 'vue';
+import * as quantize from 'quantize';
 
 const rows = ref(20);
 const cols = ref(30);
 const canvasContainer = ref(null);
 const maxPreviewSize = 300;
+
+function reduceCanvasColors(canvas, colorCount = 6) {
+  const ctx = canvas.getContext("2d");
+  const { width, height } = canvas;
+
+  // Get raw pixel data
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+
+  // Collect all pixels (ignoring alpha)
+  const pixelArray = [];
+  for (let i = 0; i < pixels.length; i += 4) {
+    // Ignore fully transparent pixels
+    if (pixels[i + 3] < 125) continue;
+      pixelArray.push([pixels[i], pixels[i + 1], pixels[i + 2]]);
+  }
+
+  // Use quantize to extract dominant colors
+  const colorMap = quantize(pixelArray, colorCount);
+  if (!colorMap) return canvas;
+  const palette = colorMap.palette();
+
+  // Helper to find nearest color
+  function nearestColor([r, g, b]) {
+    let nearest = palette[0];
+    let minDist = Infinity;
+    for (const [pr, pg, pb] of palette) {
+      const dr = r - pr;
+      const dg = g - pg;
+      const db = b - pb;
+      const dist = dr * dr + dg * dg + db * db;
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = [pr, pg, pb];
+      }
+    }
+    return nearest;
+  }
+
+  // Repaint pixels with nearest palette color
+  for (let i = 0; i < pixels.length; i += 4) {
+    if (pixels[i + 3] < 125) continue; // keep transparency
+    const [r, g, b] = nearestColor([pixels[i], pixels[i + 1], pixels[i + 2]]);
+    pixels[i] = r;
+    pixels[i + 1] = g;
+    pixels[i + 2] = b;
+  }
+
+  // Put modified pixels back
+  ctx.putImageData(imageData, 0, 0);
+
+  return canvas;
+}
+
 
 // Pixelate and scale function
 function pixelateImage(imgSrc, cols, rows, maxSize = 300) {
@@ -30,6 +85,7 @@ function pixelateImage(imgSrc, cols, rows, maxSize = 300) {
 
       // Canvas for final preview
       const canvas = document.createElement('canvas');
+
       const ctx = canvas.getContext('2d');
       canvas.width = cols * pixelSize;
       canvas.height = rows * pixelSize;
@@ -65,8 +121,9 @@ async function onFileChange(e) {
   const reader = new FileReader();
   reader.onload = async () => {
     const canvas = await pixelateImage(reader.result, cols.value, rows.value, maxPreviewSize);
+    const colorReducedCanvas = reduceCanvasColors(canvas, 4);
     canvasContainer.value.innerHTML = '';
-    canvasContainer.value.appendChild(canvas);
+    canvasContainer.value.appendChild(colorReducedCanvas);
   };
   reader.readAsDataURL(file);
 }
