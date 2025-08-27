@@ -121,7 +121,7 @@ async function onFileChange(e) {
   const reader = new FileReader();
   reader.onload = async () => {
     const canvas = await pixelateImage(reader.result, cols.value, rows.value, maxPreviewSize);
-    const colorReducedCanvas = reduceCanvasColors(canvas, 4);
+    const colorReducedCanvas = reduceCanvasColors(canvas, 6);
     canvasContainer.value.innerHTML = '';
     canvasContainer.value.appendChild(colorReducedCanvas);
   };
