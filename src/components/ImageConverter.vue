@@ -7,6 +7,8 @@
       <label>Cols: <input type="number" v-model.number="cols" min="1" /></label>
     </div>
     <div ref="canvasContainer" style="border:1px solid #ccc; display:inline-block; margin-top:10px;"></div>
+    <div ref="tableContainer" style="border:1px solid #ccc; display:inline-block; margin-top:10px;"></div>
+
   </div>
 </template>
 
@@ -17,6 +19,7 @@ import * as quantize from 'quantize';
 const rows = ref(20);
 const cols = ref(30);
 const canvasContainer = ref(null);
+const tableContainer = ref(null);
 const maxPreviewSize = 300;
 
 function reduceCanvasColors(canvas, colorCount = 6) {
@@ -69,7 +72,7 @@ function reduceCanvasColors(canvas, colorCount = 6) {
   // Put modified pixels back
   ctx.putImageData(imageData, 0, 0);
 
-  return canvas;
+  return [canvas, palette];
 }
 
 
@@ -114,6 +117,52 @@ function pixelateImage(imgSrc, cols, rows, maxSize = 300) {
   });
 }
 
+function canvasToTable(canvas, rows, cols, colors) {
+  const ctx = canvas.getContext("2d");
+  const { width } = canvas;
+
+  const pixelSize = width / cols;
+
+  const table = [];
+  const htmlTable = document.createElement("table");
+  htmlTable.style.borderCollapse = "collapse";
+
+  for (let row = 0; row < rows; row++) {
+    const rowArr = [];
+    const tr = document.createElement("tr");
+
+    for (let col = 0; col < cols; col++) {
+      const x = Math.floor(col * pixelSize + pixelSize / 2);
+      const y = Math.floor(row * pixelSize + pixelSize / 2);
+      const [r, g, b, a] = ctx.getImageData(x, y, 1, 1).data;
+      const rgb = [r, g, b];
+      rowArr.push(rgb);
+
+      // Create table cell with background color
+      const td = document.createElement("td");
+      td.style.width = `${pixelSize}px`;
+      td.style.height = `${pixelSize}px`;
+      td.style.border = "1px solid #ccc";
+      td.style.backgroundColor = `rgb(${r},${g},${b})`;
+      tr.appendChild(td);
+    }
+
+    htmlTable.appendChild(tr);
+    table.push(rowArr);
+  }
+
+  return {
+    table,          // raw RGB array
+    rowCount: rows,
+    colCount: cols,
+    colors,
+    htmlTable       // <table> element you can append to DOM
+  };
+}
+
+
+
+
 // Handle file upload
 async function onFileChange(e) {
   const file = e.target.files[0];
@@ -121,9 +170,14 @@ async function onFileChange(e) {
   const reader = new FileReader();
   reader.onload = async () => {
     const canvas = await pixelateImage(reader.result, cols.value, rows.value, maxPreviewSize);
-    const colorReducedCanvas = reduceCanvasColors(canvas, 6);
+    const [colorReducedCanvas, palette] = reduceCanvasColors(canvas, 6);
     canvasContainer.value.innerHTML = '';
     canvasContainer.value.appendChild(colorReducedCanvas);
+
+    const tableObj = canvasToTable(colorReducedCanvas, rows.value, cols.value, palette);
+    console.log(tableObj);
+    tableContainer.value.innerHTML = '';
+    tableContainer.value.appendChild(tableObj.htmlTable);
   };
   reader.readAsDataURL(file);
 }
