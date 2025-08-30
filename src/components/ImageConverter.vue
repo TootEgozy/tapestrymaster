@@ -66,7 +66,7 @@ export default {
       }
 
       // extract dominant colors
-      const colorMap = quantize(pixelArray, this.colorsCount < 2 ? 2 : this.colorsCount);
+      const colorMap = quantize(pixelArray, this.colorsCount);
       if (!colorMap) return canvas;
       const palette = colorMap.palette();
 
@@ -176,7 +176,6 @@ export default {
         this.$refs.canvasContainer.appendChild(colorReducedCanvas);
 
         const tableObj = this.canvasToTable(colorReducedCanvas);
-        console.log(tableObj);
         this.$refs.tableContainer.innerHTML = '';
         this.$refs.tableContainer.appendChild(tableObj.htmlTable);
       };
