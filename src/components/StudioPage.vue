@@ -16,6 +16,7 @@
 
       <ColorsInput
           :ref="'colorsInputRef'"
+          :rawColors="rawColors"
           @colorsGenerated="setGeneratedColors"
           @changeColor="setSelectedColor"
           @toggleDisplayColorNames="toggleDisplayColorNames"
@@ -58,6 +59,8 @@ import ImageConverter from "@/components/ImageConverter.vue";
 export default {
   name: "StudioPage",
 
+  props: ['imageTable', 'colorPalette'],
+
   data() {
     return {
       rowsNumber: 1,
@@ -69,6 +72,8 @@ export default {
       instructionsKey: 0,
       tableData: undefined,
       displayColorNames: true,
+      rawColors: this.$props.colorPalette,
+      htmlTable: this.$props.imageTable,
     };
   },
 

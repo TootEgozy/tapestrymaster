@@ -56,6 +56,8 @@ export default {
 
   name: 'ColorsInput',
 
+  props: ['rawColors'],
+
   data() {
     return {
       colors: [],
@@ -71,10 +73,12 @@ export default {
     randomiseIndex(max) {
         return Math.round(Math.random() * max);
     },
-    generateColor(order) {
+
+    generateColor(order, colorFromPalette=undefined) {
       const letter = String.fromCharCode(this.lastLetterCode);
       const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
-      const color = this.availableColors.splice(colorIndex, 1)[0];
+      const color = colorFromPalette || this.availableColors.splice(colorIndex, 1)[0];
+      console.log(color)
       this.lastLetterCode++;
       return {
         order,
@@ -146,20 +150,97 @@ export default {
         this.$nextTick(() => this.colorSelected(0));
       }
     },
+
     toggleColorNames() {
       this.displayColorNames = !this.displayColorNames;
       this.$emit('toggleDisplayColorNames');
+    },
+
+    rgbToColorName([r, g, b]) {
+
+      const rgbString = `${r}${g}${b}`;
+      // Normalize to 0–1
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+
+      if (max === min) {
+        h = s = 0; // gray
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h *= 60;
+      }
+
+      let colorName = '';
+
+      // Now decide based on HSL
+      if (s < 0.15 && l < 0.2) colorName = "black";
+      else if (s < 0.15 && l > 0.8) colorName = "white";
+      else if (s < 0.15) colorName = "gray";
+
+      else if (h < 15 || h >= 345) colorName = "red";
+      else if (h < 45) colorName = l < 0.5 ? "brown" : "orange";
+      else if (h < 65) colorName = "yellow";
+      else if (h < 170) colorName = "green";
+      else if (h < 200) colorName = "cyan";
+      else if (h < 260) colorName = "blue";
+      else if (h < 290) colorName = "purple";
+      else if (h < 330) colorName = "pink";
+      else colorName = "magenta";
+
+      return `${colorName}-${rgbString}`;
+    },
+
+    rgbArrayToHex([r, g, b]) {
+      return (
+          "#" +
+          [r, g, b]
+              .map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? "0" + hex : hex;
+              })
+              .join("")
+      );
+    },
+
+    async initializeColorsFromRaw() {
+      this.colors = [];
+      this.$props.rawColors.map(rc => {
+        return {
+          name: this.rgbToColorName(rc),
+          RGB: this.rgbArrayToHex(rc),
+        }
+      }).forEach((c, i) => {
+        const newColor = this.generateColor(i, c);
+        this.colors.push(newColor);
+      });
+      this.selectedColor = this.colors[1];
+      this.selectedColorIndex = 1;
+      this.displayColorNames = false;
+      this.$emit('changeColor', this.selectedColor);
     }
   },
+
+
 
   watch: {
     'colors.length': function () {
       this.$emit('colorsGenerated', this.colors);
-    }
+    },
   },
 
   async mounted() {
-    await this.initialiseColors();
+    if(this.$props.rawColors.length > 0) {
+      await this.initializeColorsFromRaw();
+    } else {
+      await this.initialiseColors();
+    }
     this.passFocusClass(1, 0);
     this.$emit('colorsGenerated', this.colors);
     this.$emit('colorSelected', this.colors[1]);

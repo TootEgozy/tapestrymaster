@@ -1,22 +1,25 @@
 <template>
   <div>
     <h2>Pixelated Image Preview</h2>
+    <button @click="backToStudio">Back to Studio</button>
+    <br><br>
     <input ref="fileInput" type="file" />
     <div style="margin-top:10px;">
       <label>Rows: <input type="number" v-model.number="rows" min="1" /></label>
       <label>Cols: <input type="number" v-model.number="cols" min="1" /></label>
       <label>Colors: <input type="number" :max="maxColors" v-model.number="colorsCount" min="2" /></label>
-      <label>Remove Background <input type="checkbox" v-model="removeBackground" /></label>
+<!--      <label>Remove Background <input type="checkbox" v-model="removeBackground" /></label>-->
       <button @click="processImageToTable">Generate</button>
     </div>
     <div ref="canvasContainer" style="border:1px solid #ccc; display:inline-block; margin-top:10px;"></div>
     <div ref="tableContainer" style="border:1px solid #ccc; display:inline-block; margin-top:10px;"></div>
+    <button @click="uploadToTable">Done</button>
   </div>
 </template>
 
 <script>
 import ColorThief from 'colorthief';
-import { removeBackground } from "@imgly/background-removal";
+// import { removeBackground } from "@imgly/background-removal";
 
 export default {
   name: "ImageConverter",
@@ -26,8 +29,10 @@ export default {
       cols: 30,
       maxColors: 6,
       colorsCount: 3,
-      removeBackground: true,
+      // removeBackground: true,
       maxPreviewSize: 300,
+      palette: [],
+      table: {}
     };
   },
   methods: {
@@ -39,35 +44,37 @@ export default {
       const reader = new FileReader();
       reader.onload = async () => {
         const [canvas, palette] = await this.pixelateImage(reader.result);
+        this.palette = palette;
 
-        if (this.removeBackground) {
-          canvas.toBlob(async blob => {
-            if (!blob) return;
-
-            try {
-              const resultBlob = await removeBackground(blob, { model: 'isnet', alphaMatting: true });
-              const reader2 = new FileReader();
-              reader2.onload = () => {
-                const img = document.createElement('img');
-                img.src = reader2.result;
-                img.style.maxWidth = '200px';
-                img.style.height = 'auto';
-                img.style.visibility = 'hidden';
-                document.body.appendChild(img);
-              };
-              reader2.readAsDataURL(resultBlob);
-            } catch (err) {
-              console.error('Background removal failed', err);
-            }
-          }, 'image/png');
-        }
+        // if (this.removeBackground) {
+        //   canvas.toBlob(async blob => {
+        //     if (!blob) return;
+        //
+        //     try {
+        //       const resultBlob = await removeBackground(blob, { model: 'isnet', alphaMatting: true });
+        //       const reader2 = new FileReader();
+        //       reader2.onload = () => {
+        //         const img = document.createElement('img');
+        //         img.src = reader2.result;
+        //         img.style.maxWidth = '200px';
+        //         img.style.height = 'auto';
+        //         img.style.visibility = 'hidden';
+        //         document.body.appendChild(img);
+        //       };
+        //       reader2.readAsDataURL(resultBlob);
+        //     } catch (err) {
+        //       console.error('Background removal failed', err);
+        //     }
+        //   }, 'image/png');
+        // }
 
         const [colorReducedCanvas] = this.reduceCanvasColors(canvas, palette);
         this.$refs.canvasContainer.innerHTML = '';
         // this.$refs.canvasContainer.appendChild(colorReducedCanvas);
 
         this.$refs.tableContainer.innerHTML = '';
-        this.$refs.tableContainer.appendChild(this.canvasToTable(colorReducedCanvas));
+        this.table = this.canvasToTable(colorReducedCanvas)
+        this.$refs.tableContainer.appendChild(this.table);
       };
       reader.readAsDataURL(file);
     },
@@ -170,6 +177,14 @@ export default {
 
       return htmlTable;
     },
+
+    backToStudio() {
+      this.$emit("backToStudio");
+    },
+
+    uploadToTable() {
+      this.$emit("uploadToTable", {palette: this.palette, table: this.table});
+    }
   }
 };
 </script>

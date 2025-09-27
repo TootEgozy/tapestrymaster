@@ -1,10 +1,17 @@
 <template>
   <div id="app">
     <main>
-      <StudioPage v-if="currentPage === 'Studio'"
-        @uploadImage="currentPage='ImageConverter'"
+      <StudioPage
+          v-if="currentPage === 'Studio'"
+          :imageTable="imageTable"
+          :colorPalette="colorPalette"
+          @uploadImage="currentPage='ImageConverter'"
       />
-      <ImageConverter v-if="currentPage === 'ImageConverter'" />
+      <ImageConverter
+          v-if="currentPage === 'ImageConverter'"
+          @backToStudio="currentPage='Studio'"
+          @uploadToTable="uploadToTable"
+      />
     </main>
   </div>
 </template>
@@ -21,9 +28,18 @@ export default {
   },
   data() {
     return {
-      currentPage: 'Studio'
+      currentPage: 'Studio',
+      imageTable: {},
+      colorPalette: [],
     };
   },
+  methods: {
+    uploadToTable(data) {
+      this.imageTable = data.table;
+      this.colorPalette = data.palette;
+      this.currentPage = 'Studio';
+    }
+  }
 };
 </script>
 
