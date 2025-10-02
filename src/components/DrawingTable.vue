@@ -1,30 +1,61 @@
 <template>
   <div class="drawing-table-container">
-
-    <table
-        id="drawing-table"
-        @mousedown="toggleMouse"
-        @mouseup="dropMouse"
-        @mouseleave="dropMouse"
-        @dragstart="dropMouse"
-    >
-      <tr
-          v-for="(row, rowIndex) in createArray(rows)"
-          :key="row"
-          :order="rows - rowIndex"
-          :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
+    <template v-if="!fromImage">
+      <table
+             id="drawing-table"
+             @mousedown="toggleMouse"
+             @mouseup="dropMouse"
+             @mouseleave="dropMouse"
+             @dragstart="dropMouse"
       >
-        <TableCell
-            v-for="(column, columnIndex) in createArray(columns)"
-            :key="column"
-            :colors="colors"
-            :selectedColor="selectedColor"
-            :ref="`cellRef${rowIndex}-${columnIndex}`"
-            :mousedown="mousedown"
-            :size="cellSize + 'px'"
-        />
-      </tr>
-    </table>
+        <tr
+            v-for="(row, rowIndex) in createArray(rows)"
+            :key="row"
+            :order="rows - rowIndex"
+            :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
+        >
+          <TableCell
+              v-for="(column, columnIndex) in createArray(columns)"
+              :key="column"
+              :colors="colors"
+              :selectedColor="selectedColor"
+              :ref="`cellRef${rowIndex}-${columnIndex}`"
+              :mousedown="mousedown"
+              :size="cellSize + 'px'"
+          />
+        </tr>
+      </table>
+    </template>
+
+    <template v-else>
+      <table
+             id="drawing-table"
+             @mousedown="toggleMouse"
+             @mouseup="dropMouse"
+             @mouseleave="dropMouse"
+             @dragstart="dropMouse"
+      >
+        <tr
+            v-for="(row, rowIndex) in Array.from(this.htmlTable.rows)"
+            :key="row"
+            :order="rows - rowIndex"
+            :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
+        >
+          <TableCell
+              v-for="(column, columnIndex) in Array.from(row.cells)"
+              :key="column"
+              :colors="colors"
+              :selectedColor="selectedColor"
+              :colorIdx="this.findColorIndex(column)"
+              :ref="`cellRef${rowIndex}-${columnIndex}`"
+              :mousedown="mousedown"
+              :size="cellSize + 'px'"
+          />
+        </tr>
+      </table>
+    </template>
+
+
 
   </div>
 </template>
@@ -36,35 +67,68 @@ import TableCell from "@/components/TableCell.vue";
 export default {
   name: 'DrawingTable',
 
-  props: ['rows', 'columns', 'colors', 'selectedColor'],
+  props: ['rowCount', 'colCount', 'colors', 'selectedColor', 'htmlTable'],
 
   data() {
     return {
       mousedown: false,
+      cellCount: 1,
       cellSize: 0,
+      rows: this.rowCount,
+      columns: this.colCount,
     }
+  },
+
+  computed: {
+    fromImage() {
+      return this.htmlTable instanceof HTMLTableElement
+    },
   },
 
   mounted() {
     this.calculateCellSize();
     window.addEventListener("resize", this.calculateCellSize);
+
+    if(this.fromImage) {
+      this.rows = this.rowCountFromTable();
+      this.columns = this.colCountFromTable();
+      this.regenerateTable();
+    }
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.calculateCellSize);
   },
 
   watch: {
-    rows: 'regenerateTable',
-    columns: 'regenerateTable',
+    rowCount(newVal) {
+      this.rows = newVal
+      this.calculateCellSize()
+    },
+    colCount(newVal) {
+      this.columns = newVal
+      this.calculateCellSize()
+    }
   },
 
   methods: {
     createArray(length) {
       return Array.from(Array(length).keys());
     },
+
+    rowCountFromTable() {
+      return this.htmlTable.rows.length;
+    },
+
+    colCountFromTable() {
+      return this.htmlTable.rows[0].cells.length;
+    },
+
     calculateCellSize() {
       const maxTableSize = window.innerWidth * 0.30; // vw for minimum cell dimensions
-      const maxCells = Math.max(this.rows, this.columns);
+      let maxCells = Math.max(this.rows, this.columns);
+      if(this.fromImage) {
+        maxCells = Math.max(this.rowCountFromTable(), this.colCountFromTable());
+      }
       this.cellSize = Math.floor(maxTableSize / maxCells);
     },
     regenerateTable() {
@@ -82,8 +146,33 @@ export default {
       },
       dropMouse(){
         this.mousedown = false;
-      }
+      },
+
+      hexToRgb(hex) {
+        hex = hex.replace(/^#/, '')
+        if (hex.length === 3) {
+          hex = hex.split('').map(x => x + x).join('')
+        }
+        const num = parseInt(hex, 16)
+        return [(num >> 16) & 255, (num >> 8) & 255, num & 255]
     },
+
+    parseRgb(str) {
+      return str
+          .replace(/[^\d,]/g, '')
+          .split(',')
+          .map(Number)
+    },
+
+    findColorIndex(td) {
+      const rgb = td.style.backgroundColor;
+      const target = this.parseRgb(rgb)
+      return this.colors.findIndex(color => {
+        const c = this.hexToRgb(color.RGB)
+        return c[0] === target[0] && c[1] === target[1] && c[2] === target[2]
+      })
+    },
+  },
 
   components: {
     TableCell,

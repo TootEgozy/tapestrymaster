@@ -78,7 +78,6 @@ export default {
       const letter = String.fromCharCode(this.lastLetterCode);
       const colorIndex = this.randomiseIndex(this.availableColors.length - 1);
       const color = colorFromPalette || this.availableColors.splice(colorIndex, 1)[0];
-      console.log(color)
       this.lastLetterCode++;
       return {
         order,

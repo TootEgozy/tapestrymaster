@@ -26,10 +26,11 @@
 
     <DrawingTable
         v-if="colors.length > 0"
-        :rows="rowsNumber"
-        :columns="columnsNumber"
+        :rowCount="rowsNumber"
+        :colCount="columnsNumber"
         :colors="colors"
         :selectedColor="selectedColor"
+        :htmlTable="htmlTable"
         :ref="'drawingTableRef'"
         @click="displayInstructions = false"
     />
@@ -54,7 +55,6 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
-import ImageConverter from "@/components/ImageConverter.vue";
 
 export default {
   name: "StudioPage",
@@ -72,9 +72,16 @@ export default {
       instructionsKey: 0,
       tableData: undefined,
       displayColorNames: true,
-      rawColors: this.$props.colorPalette,
-      htmlTable: this.$props.imageTable,
+      rawColors: this.colorPalette,
+      htmlTable: this.imageTable,
     };
+  },
+
+  mounted() {
+    if(this.htmlTable instanceof HTMLTableElement) {
+      this.rowsNumber = this.htmlTable.rows.length;
+      this.columnsNumber = this.htmlTable.rows[0].cells.length;
+    }
   },
 
   methods: {

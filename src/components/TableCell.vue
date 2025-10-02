@@ -14,10 +14,10 @@
 <script>
 export default {
   name: "TableCell",
-  props: ["colors", "selectedColor", "mousedown", "size"],
+  props: ["colors", "selectedColor", "mousedown", "size", "colorIdx"],
   data() {
     return {
-      colorIndex: 0,
+      colorIndex: this.colorIdx? this.colorIdx : 0,
       currentColor: { RGB: "000000" },
     };
   },
