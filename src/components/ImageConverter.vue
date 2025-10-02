@@ -141,7 +141,7 @@ export default {
           }
 
           const colorThief = new ColorThief();
-          const palette = colorThief.getPalette(img, this.colorsCount, 5);
+          const palette = colorThief.getPalette(img, this.colorsCount, 10);
 
           resolve([canvas, palette]);
         };

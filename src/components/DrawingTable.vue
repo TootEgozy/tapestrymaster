@@ -31,6 +31,7 @@
 <script>
 
 import TableCell from "@/components/TableCell.vue";
+import {getBackgroundColorFromTable} from "@/utils/getBackgroundColorFromTable";
 
 export default {
   name: 'DrawingTable',
@@ -82,9 +83,11 @@ export default {
   methods: {
     determineCellColorIndex(ri, ci) {
       if(this.fromImage && !this.doneImgRender) {
-        return this.findColorIndex(ri, ci);
+        return this.colorIndexFromTd(ri, ci);
       }
-      else return 0;
+      else if(this.fromImage) {
+        return this.findBackGroundIndex();
+      }  else return 0;
     },
 
     createArray(length) {
@@ -100,11 +103,11 @@ export default {
     },
 
     calculateCellSize() {
-      const maxTableSize = window.innerWidth * 0.30; // vw for minimum cell dimensions
+      const maxTableSize = window.innerWidth * 0.3; // vw for minimum cell dimensions
       let maxCells = Math.max(this.rows, this.columns);
-      if(this.fromImage) {
-        maxCells = Math.max(this.rowCountFromTable(), this.colCountFromTable());
-      }
+      // if(this.fromImage) {
+      //   maxCells = Math.max(this.rowCountFromTable(), this.colCountFromTable());
+      // }
       this.cellSize = Math.floor(maxTableSize / maxCells);
     },
 
@@ -126,13 +129,13 @@ export default {
         this.mousedown = false;
       },
 
-      hexToRgb(hex) {
-        hex = hex.replace(/^#/, '')
-        if (hex.length === 3) {
-          hex = hex.split('').map(x => x + x).join('')
-        }
-        const num = parseInt(hex, 16)
-        return [(num >> 16) & 255, (num >> 8) & 255, num & 255]
+    hexToRgb(hex) {
+      hex = hex.replace(/^#/, '')
+      if (hex.length === 3) {
+        hex = hex.split('').map(x => x + x).join('')
+      }
+      const num = parseInt(hex, 16)
+      return [(num >> 16) & 255, (num >> 8) & 255, num & 255]
     },
 
     parseRgb(str) {
@@ -142,14 +145,24 @@ export default {
           .map(Number)
     },
 
-    findColorIndex(rowIndex, colIndex) {
-      const td = Array.from(Array.from(this.htmlTable.rows)[rowIndex].cells)[colIndex];
-      const rgb = td.style.backgroundColor;
-      const target = this.parseRgb(rgb)
+    findColorIndex(target) {
       return this.colors.findIndex(color => {
         const c = this.hexToRgb(color.RGB)
         return c[0] === target[0] && c[1] === target[1] && c[2] === target[2]
       })
+    },
+
+    findBackGroundIndex() {
+      const prominentColor = getBackgroundColorFromTable(this.htmlTable);
+      const target = this.parseRgb(prominentColor);
+      return this.findColorIndex(target);
+    },
+
+    colorIndexFromTd(rowIndex, colIndex) {
+      const td = Array.from(Array.from(this.htmlTable.rows)[rowIndex].cells)[colIndex];
+      const rgb = td.style.backgroundColor;
+      const target = this.parseRgb(rgb)
+      return this.findColorIndex(target);
     },
   },
 
