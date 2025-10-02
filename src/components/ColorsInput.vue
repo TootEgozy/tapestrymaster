@@ -108,8 +108,11 @@ export default {
     },
 
     passFocusClass(newColorIndex, oldColorIndex) {
-      this.$refs[`colors-elements`][oldColorIndex]?.classList.remove('focus');
-      this.$refs[`colors-elements`][newColorIndex]?.classList.add('focus');
+      const refs = this.$refs['colors-elements'];
+      const elements = Array.isArray(refs) ? refs : [refs];
+
+      elements[oldColorIndex]?.classList.remove('focus');
+      elements[newColorIndex]?.classList.add('focus');
     },
     // resetColorName(e) {
     //   const colorIndex = this.colors.findIndex((color) => color.genericName === e.target.className);
@@ -220,14 +223,13 @@ export default {
         const newColor = this.generateColor(i, c);
         this.colors.push(newColor);
       });
-      this.selectedColor = this.colors[1];
-      this.selectedColorIndex = 1;
+      this.selectedColor = this.colors[0];
+      this.selectedColorIndex = 0;
       this.displayColorNames = false;
+      this.passFocusClass(0, 1);
       this.$emit('changeColor', this.selectedColor);
     }
   },
-
-
 
   watch: {
     'colors.length': function () {
@@ -236,14 +238,16 @@ export default {
   },
 
   async mounted() {
-    if(this.$props.rawColors.length > 0) {
+    const colorsFromTable = this.$props.rawColors.length > 0;
+    if(colorsFromTable) {
       await this.initializeColorsFromRaw();
+      this.passFocusClass(0);
     } else {
       await this.initialiseColors();
+      this.passFocusClass(1, 0);
     }
-    this.passFocusClass(1, 0);
     this.$emit('colorsGenerated', this.colors);
-    this.$emit('colorSelected', this.colors[1]);
+    this.$emit('colorSelected', colorsFromTable ? this.colors[0] : this.colors[1]);
   },
 }
 </script>

@@ -1,62 +1,30 @@
 <template>
   <div class="drawing-table-container">
-    <template v-if="!fromImage">
-      <table
-             id="drawing-table"
-             @mousedown="toggleMouse"
-             @mouseup="dropMouse"
-             @mouseleave="dropMouse"
-             @dragstart="dropMouse"
+    <table
+           id="drawing-table"
+           @mousedown="toggleMouse"
+           @mouseup="dropMouse"
+           @mouseleave="dropMouse"
+           @dragstart="dropMouse"
+    >
+      <tr
+          v-for="(row, rowIndex) in createArray(rows)"
+          :key="row"
+          :order="rows - rowIndex"
+          :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
       >
-        <tr
-            v-for="(row, rowIndex) in createArray(rows)"
-            :key="row"
-            :order="rows - rowIndex"
-            :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
-        >
-          <TableCell
-              v-for="(column, columnIndex) in createArray(columns)"
-              :key="column"
-              :colors="colors"
-              :selectedColor="selectedColor"
-              :ref="`cellRef${rowIndex}-${columnIndex}`"
-              :mousedown="mousedown"
-              :size="cellSize + 'px'"
-          />
-        </tr>
-      </table>
-    </template>
-
-    <template v-else>
-      <table
-             id="drawing-table"
-             @mousedown="toggleMouse"
-             @mouseup="dropMouse"
-             @mouseleave="dropMouse"
-             @dragstart="dropMouse"
-      >
-        <tr
-            v-for="(row, rowIndex) in Array.from(this.htmlTable.rows)"
-            :key="row"
-            :order="rows - rowIndex"
-            :side="(rows - rowIndex) % 2 === 0 ? 'WS' : 'RS'"
-        >
-          <TableCell
-              v-for="(column, columnIndex) in Array.from(row.cells)"
-              :key="column"
-              :colors="colors"
-              :selectedColor="selectedColor"
-              :colorIdx="this.findColorIndex(column)"
-              :ref="`cellRef${rowIndex}-${columnIndex}`"
-              :mousedown="mousedown"
-              :size="cellSize + 'px'"
-          />
-        </tr>
-      </table>
-    </template>
-
-
-
+        <TableCell
+            v-for="(column, columnIndex) in createArray(columns)"
+            :key="column"
+            :colors="colors"
+            :selectedColor="selectedColor"
+            :colorIdx="determineCellColorIndex(rowIndex, columnIndex)"
+            :ref="`cellRef${rowIndex}-${columnIndex}`"
+            :mousedown="mousedown"
+            :size="cellSize + 'px'"
+        />
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -67,7 +35,7 @@ import TableCell from "@/components/TableCell.vue";
 export default {
   name: 'DrawingTable',
 
-  props: ['rowCount', 'colCount', 'colors', 'selectedColor', 'htmlTable'],
+  props: ['rowCount', 'colCount', 'colors', 'selectedColor', 'htmlTable', 'doneImgRender'],
 
   data() {
     return {
@@ -92,9 +60,10 @@ export default {
     if(this.fromImage) {
       this.rows = this.rowCountFromTable();
       this.columns = this.colCountFromTable();
-      this.regenerateTable();
+      this.$emit('doneImgRender');
     }
   },
+
   beforeUnmount() {
     window.removeEventListener("resize", this.calculateCellSize);
   },
@@ -111,6 +80,13 @@ export default {
   },
 
   methods: {
+    determineCellColorIndex(ri, ci) {
+      if(this.fromImage && !this.doneImgRender) {
+        return this.findColorIndex(ri, ci);
+      }
+      else return 0;
+    },
+
     createArray(length) {
       return Array.from(Array(length).keys());
     },
@@ -166,7 +142,8 @@ export default {
           .map(Number)
     },
 
-    findColorIndex(td) {
+    findColorIndex(rowIndex, colIndex) {
+      const td = Array.from(Array.from(this.htmlTable.rows)[rowIndex].cells)[colIndex];
       const rgb = td.style.backgroundColor;
       const target = this.parseRgb(rgb)
       return this.colors.findIndex(color => {

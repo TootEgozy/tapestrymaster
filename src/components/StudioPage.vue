@@ -11,7 +11,7 @@
         <label for="rows">rows:</label>
         <input type="number" min="0" id="rows" v-model="rows" />
         <label for="columns">columns:</label>
-        <input type="number" min="0" id="columns" v-model="columns"/>
+        <input type="number" min="0" id="columns" v-model="columns" />
       </div>
 
       <ColorsInput
@@ -31,9 +31,11 @@
         :colCount="columns"
         :colors="colors"
         :selectedColor="selectedColor"
-        :htmlTable="htmlTable"
+        :htmlTable="imageTable"
+        :doneImgRender="doneImageToTable"
         :ref="'drawingTableRef'"
         @click="displayInstructions = false"
+        @doneImgRender="doneImageToTable = true"
     />
 
     <div class="table-buttons">
@@ -64,31 +66,22 @@ export default {
 
   data() {
     return {
-      rows: 1,
-      columns: 1,
-      generated: false,
+      rows: this.isFromImage() ? this.getRowCountFromTable() : 1,
+      columns: this.isFromImage() ? this.getColCountFromTable() : 1,
       colors: [],
       selectedColor: {},
       displayInstructions: false,
       instructionsKey: 0,
       tableData: undefined,
-      displayColorNames: true,
+      displayColorNames: !this.isFromImage(),
       rawColors: this.colorPalette,
-      htmlTable: this.imageTable,
+      doneImageToTable: false,
     };
-  },
-
-  mounted() {
-    if(this.htmlTable instanceof HTMLTableElement) {
-      this.rows = this.htmlTable.rows.length;
-      this.columns = this.htmlTable.rows[0].cells.length;
-      this.toggleDisplayColorNames();
-    }
   },
 
   methods: {
     createInstructions() {
-      const tableData = { 0: ["ch", Number(this.columnsNumber) + 1]};
+      const tableData = { 0: ["ch", Number(this.columns) + 1]};
       const table = document.getElementById("drawing-table");
       Array.from(table.rows).reverse().forEach((tr) => {
         const rowOrder = tr.getAttribute("order");
@@ -106,6 +99,19 @@ export default {
       if (this.displayInstructions === false) this.toggleShowInstructions();
       this.instructionsKey++;
     },
+
+    isFromImage() {
+      return this.imageTable instanceof HTMLTableElement;
+    },
+
+    getRowCountFromTable() {
+      return this.imageTable.rows.length;
+    },
+
+    getColCountFromTable() {
+      return this.imageTable.rows[0].cells.length;
+    },
+
     resetColor() {
       this.$refs[`drawingTableRef`].resetCellsColor();
     },
@@ -140,7 +146,7 @@ export default {
       if (!this.tableData) this.createInstructions();
 
       const instructionsHtml = `
-      <html>
+      <html lang="en">
         <head>
           <title>Instructions</title>
           <style>

@@ -3,7 +3,7 @@
     :style="{
       backgroundColor: currentColor.RGB,
       width: size,
-      height: size,
+      height: size
     }"
     :class="[currentColor.genericName, currentColor.name]"
     @click.prevent="changeColor"
@@ -17,7 +17,7 @@ export default {
   props: ["colors", "selectedColor", "mousedown", "size", "colorIdx"],
   data() {
     return {
-      colorIndex: this.colorIdx? this.colorIdx : 0,
+      colorIndex: this.colorIdx ? this.colorIdx : 0,
       currentColor: { RGB: "000000" },
     };
   },
