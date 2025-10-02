@@ -9,9 +9,9 @@
 
       <div id="columns-rows-input">
         <label for="rows">rows:</label>
-        <input type="number" min="0" id="rows" v-model="rowsNumber" />
+        <input type="number" min="0" id="rows" v-model="rows" />
         <label for="columns">columns:</label>
-        <input type="number" min="0" id="columns" v-model="columnsNumber"/>
+        <input type="number" min="0" id="columns" v-model="columns"/>
       </div>
 
       <ColorsInput
@@ -19,6 +19,7 @@
           :rawColors="rawColors"
           @colorsGenerated="setGeneratedColors"
           @changeColor="setSelectedColor"
+          @colorNameChanged="colorNameChanged"
           @toggleDisplayColorNames="toggleDisplayColorNames"
       />
 
@@ -26,8 +27,8 @@
 
     <DrawingTable
         v-if="colors.length > 0"
-        :rowCount="rowsNumber"
-        :colCount="columnsNumber"
+        :rowCount="rows"
+        :colCount="columns"
         :colors="colors"
         :selectedColor="selectedColor"
         :htmlTable="htmlTable"
@@ -63,8 +64,8 @@ export default {
 
   data() {
     return {
-      rowsNumber: 1,
-      columnsNumber: 1,
+      rows: 1,
+      columns: 1,
       generated: false,
       colors: [],
       selectedColor: {},
@@ -79,8 +80,9 @@ export default {
 
   mounted() {
     if(this.htmlTable instanceof HTMLTableElement) {
-      this.rowsNumber = this.htmlTable.rows.length;
-      this.columnsNumber = this.htmlTable.rows[0].cells.length;
+      this.rows = this.htmlTable.rows.length;
+      this.columns = this.htmlTable.rows[0].cells.length;
+      this.toggleDisplayColorNames();
     }
   },
 
@@ -122,6 +124,12 @@ export default {
 
     setSelectedColor(selectedColor) {
       this.selectedColor = selectedColor;
+    },
+
+    colorNameChanged() {
+      if(this.displayInstructions) {
+        this.createInstructions();
+      }
     },
 
     uploadImage() {

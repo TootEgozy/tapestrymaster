@@ -14,6 +14,7 @@
           type="text"
           :class="'color-name'"
           v-model="colors[i].name"
+          @input="$emit('colorNameChanged')"
       >
 
       <p v-if="!this.displayColorNames">

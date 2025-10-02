@@ -131,9 +131,11 @@ export default {
       }
       this.cellSize = Math.floor(maxTableSize / maxCells);
     },
+
     regenerateTable() {
       this.calculateCellSize();
     },
+
     resetCellsColor() {
       for (let i = 0; i < this.rows; i++) {
         for (let j = 0; j < this.columns; j++) {
