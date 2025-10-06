@@ -16,12 +16,15 @@
         <TableCell
             v-for="(column, columnIndex) in createArray(columns)"
             :key="column"
+            :rowIndex="rowIndex"
+            :columnIndex="columnIndex"
             :colors="colors"
             :selectedColor="selectedColor"
             :colorIdx="determineCellColorIndex(rowIndex, columnIndex)"
             :ref="`cellRef${rowIndex}-${columnIndex}`"
             :mousedown="mousedown"
             :size="cellSize + 'px'"
+            @cell-hover="onCellHover"
         />
       </tr>
     </table>
@@ -36,7 +39,7 @@ import {getBackgroundColorFromTable} from "@/utils/getBackgroundColorFromTable";
 export default {
   name: 'DrawingTable',
 
-  props: ['rowCount', 'colCount', 'colors', 'selectedColor', 'htmlTable', 'doneImgRender'],
+  props: ['rowCount', 'colCount', 'colors', 'selectedColor', 'htmlTable', 'doneImgRender', 'brushSize'],
 
   data() {
     return {
@@ -45,6 +48,21 @@ export default {
       cellSize: 0,
       rows: this.rowCount,
       columns: this.colCount,
+      brushOffsets: {
+        s: [[0, 0]],
+        m: [[0, 0], [0, 1], [1, 0], [1, 1]],
+        l: [
+          [-1, -1], [-1, 0], [-1, 1],
+          [0, -1],  [0, 0],  [0, 1],
+          [1, -1],  [1, 0],  [1, 1]
+        ],
+        xl: [
+          [-1, -1], [-1, 0], [-1, 1], [-1, 2],
+          [0, -1],  [0, 0],  [0, 1],  [0, 2],
+          [1, -1],  [1, 0],  [1, 1],  [1, 2],
+          [2, -1],  [2, 0],  [2, 1],  [2, 2]
+        ]
+      }
     }
   },
 
@@ -105,10 +123,8 @@ export default {
     calculateCellSize() {
       const maxTableSize = window.innerWidth * 0.3; // vw for minimum cell dimensions
       let maxCells = Math.max(this.rows, this.columns);
-      // if(this.fromImage) {
-      //   maxCells = Math.max(this.rowCountFromTable(), this.colCountFromTable());
-      // }
       this.cellSize = Math.floor(maxTableSize / maxCells);
+      this.$emit('cellSize', this.cellSize);
     },
 
     regenerateTable() {
@@ -163,6 +179,24 @@ export default {
       const rgb = td.style.backgroundColor;
       const target = this.parseRgb(rgb)
       return this.findColorIndex(target);
+    },
+
+    paintBrush(centralRow, centralCol, brushSize) {
+      const offsets = this.brushOffsets[brushSize];
+      offsets.forEach(([rOffset, cOffset]) => {
+        const newRow = centralRow + rOffset;
+        const newCol = centralCol + cOffset;
+
+        // skip out-of-bounds
+        if (newRow >= 0 && newRow < this.rows && newCol >= 0 && newCol < this.columns) {
+          // paint the cell
+          this.$refs[`cellRef${newRow}-${newCol}`][0].changeColor();
+        }
+      });
+    },
+
+    onCellHover(rowIndex, columnIndex) {
+      this.paintBrush(rowIndex, columnIndex, this.brushSize);
     },
   },
 

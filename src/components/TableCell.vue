@@ -14,7 +14,7 @@
 <script>
 export default {
   name: "TableCell",
-  props: ["colors", "selectedColor", "mousedown", "size", "colorIdx"],
+  props: ["rowIndex", "columnIndex", "colors", "selectedColor", "mousedown", "size", "colorIdx"],
   data() {
     return {
       colorIndex: this.colorIdx ? this.colorIdx : 0,
@@ -32,7 +32,10 @@ export default {
       this.currentColor = this.colors[0];
     },
     handleMouseOver() {
-      if (this.mousedown) this.changeColor();
+      if (this.mousedown) {
+        this.changeColor();
+        this.$emit('cell-hover', this.rowIndex, this.columnIndex);
+      }
     },
   },
   watch: {

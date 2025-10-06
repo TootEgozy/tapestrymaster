@@ -1,6 +1,12 @@
 <template>
   <div class="app-body">
 
+    <CustomCursor
+        :brushSize="brushSize"
+        :cellSize="cellSize"
+        :color="selectedColor.RGB"
+        :mode="cursorMode" />
+
     <div class="inputs-container">
       <p>
         Insert the desired measurements for your project or
@@ -12,6 +18,17 @@
         <input type="number" min="0" id="rows" v-model="rows" />
         <label for="columns">columns:</label>
         <input type="number" min="0" id="columns" v-model="columns" />
+      </div>
+
+      <div id="cursor-input">
+        <button @click="assignCursorMode(cursorModes.BRUSH)">Brush Cursor</button>
+        <template v-if="cursorMode === cursorModes.BRUSH">
+          <p>Size:</p>
+          <button @click="brushSize = 's'">s</button>
+          <button @click="brushSize = 'm'">m</button>
+          <button @click="brushSize = 'l'">l</button>
+          <button @click="brushSize = 'xl'">xl</button>
+        </template>
       </div>
 
       <ColorsInput
@@ -33,9 +50,11 @@
         :selectedColor="selectedColor"
         :htmlTable="imageTable"
         :doneImgRender="doneImageToTable"
+        :brushSize="brushSize"
         :ref="'drawingTableRef'"
         @click="displayInstructions = false"
         @doneImgRender="doneImageToTable = true"
+        @cellSize="(size) => this.cellSize = size"
     />
 
     <div class="table-buttons">
@@ -58,6 +77,8 @@
 import DrawingTable from "@/components/DrawingTable.vue";
 import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
+import CustomCursor from "@/components/CustomCursor.vue";
+import { CursorMode } from "@/enums.js"
 
 export default {
   name: "StudioPage",
@@ -68,6 +89,7 @@ export default {
     return {
       rows: this.isFromImage() ? this.getRowCountFromTable() : 1,
       columns: this.isFromImage() ? this.getColCountFromTable() : 1,
+      cellSize: 10,
       colors: [],
       selectedColor: {},
       displayInstructions: false,
@@ -76,6 +98,9 @@ export default {
       displayColorNames: !this.isFromImage(),
       rawColors: this.colorPalette,
       doneImageToTable: false,
+      cursorModes: CursorMode,
+      cursorMode: CursorMode.DEFAULT,
+      brushSize: 's',
     };
   },
 
@@ -176,9 +201,14 @@ export default {
       newWindow.document.close();
     },
 
+    assignCursorMode(selectedMode) {
+      if(this.cursorMode === selectedMode) this.cursorMode = this.cursorModes['DEFAULT'];
+      else this.cursorMode = selectedMode;
+    }
   },
 
   components: {
+    CustomCursor,
     DrawingTable,
     InstructionsTable,
     ColorsInput,
