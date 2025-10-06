@@ -1,6 +1,6 @@
 <template>
   <div
-      v-if="mode === 'brush'"
+      v-if="active"
       class="custom-cursor"
       :style="brushCursor"
   ></div>
@@ -10,7 +10,7 @@
 export default {
   name: 'CustomCursor',
   props: {
-    brushSize: {type: String, default: 's'},
+    brushSize: {type: Number, default: 1},
     cellSize: { type: Number, default: 20 },
     color: { type: String, default: '#000' },
     mode: { type: String },
@@ -19,47 +19,32 @@ export default {
     return {
       x: 0,
       y: 0,
+      active: false,
     };
   },
   computed: {
     brushCursor() {
-      let brushSize = 1;
-      switch (this.brushSize) {
-        case 's':
-          brushSize = 1;
-          break;
-        case 'm':
-          brushSize = 2;
-          break;
-        case 'l':
-          brushSize = 3;
-          break;
-        case 'xl':
-          brushSize = 4;
-          break;
-        default:
-          break;
-      }
+      const baseSize = this.cellSize * this.brushSize;
       return {
         left: this.x + 'px',
         top: this.y + 'px',
-        width: this.cellSize * brushSize + 'px',
-        height: this.cellSize * brushSize + 'px',
+        width: baseSize + 'px',
+        height: baseSize + 'px',
         background: this.hexToRgba(this.color, 0.7),
         border: '1px solid black',
-        borderRadius: '50px',
+        borderRadius: '30px',
         transform: 'translate(-50%, -50%)',
       };
     },
   },
   watch: {
-    mode(newVal) {
-      document.body.style.cursor = newVal === 'brush' ? 'none' : 'auto';
-    },
+    // mode(newVal) {
+    //   document.body.style.cursor = newVal === 'brush' ? 'none' : 'auto';
+    // },
   },
   mounted() {
     window.addEventListener('mousemove', this.updateCursor);
-    document.body.style.cursor = this.mode === 'brush' ? 'none' : 'auto';
+    // document.body.style.cursor = this.mode === 'brush' ? 'none' : 'auto';
   },
   beforeUnmount() {
     window.removeEventListener('mousemove', this.updateCursor);
@@ -69,6 +54,11 @@ export default {
     updateCursor(e) {
       this.x = e.clientX;
       this.y = e.clientY;
+    },
+
+    setActive(value) {
+      this.active = value;
+      document.body.style.cursor = value ? "none" : "auto";
     },
 
     hexToRgba(hex, alpha = 1) {

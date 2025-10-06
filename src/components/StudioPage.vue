@@ -1,12 +1,6 @@
 <template>
   <div class="app-body">
 
-    <CustomCursor
-        :brushSize="brushSize"
-        :cellSize="cellSize"
-        :color="selectedColor.RGB"
-        :mode="cursorMode" />
-
     <div class="inputs-container">
       <p>
         Insert the desired measurements for your project or
@@ -20,17 +14,6 @@
         <input type="number" min="0" id="columns" v-model="columns" />
       </div>
 
-      <div id="cursor-input">
-        <button @click="assignCursorMode(cursorModes.BRUSH)">Brush Cursor</button>
-        <template v-if="cursorMode === cursorModes.BRUSH">
-          <p>Size:</p>
-          <button @click="brushSize = 's'">s</button>
-          <button @click="brushSize = 'm'">m</button>
-          <button @click="brushSize = 'l'">l</button>
-          <button @click="brushSize = 'xl'">xl</button>
-        </template>
-      </div>
-
       <ColorsInput
           :ref="'colorsInputRef'"
           :rawColors="rawColors"
@@ -42,20 +25,40 @@
 
     </div>
 
-    <DrawingTable
-        v-if="colors.length > 0"
-        :rowCount="rows"
-        :colCount="columns"
-        :colors="colors"
-        :selectedColor="selectedColor"
-        :htmlTable="imageTable"
-        :doneImgRender="doneImageToTable"
+    <CustomCursor
+        ref="customCursor"
         :brushSize="brushSize"
-        :ref="'drawingTableRef'"
-        @click="displayInstructions = false"
-        @doneImgRender="doneImageToTable = true"
-        @cellSize="(size) => this.cellSize = size"
+        :cellSize="cellSize"
+        :color="selectedColor.RGB"
     />
+
+    <div
+        class="drawing-table-wrapper"
+        @mouseenter="$refs.customCursor.setActive(true)"
+        @mouseleave="$refs.customCursor.setActive(false)"
+    >
+
+      <BrushSizeInput
+          :rows="rows"
+          :columns="columns"
+          @brushSizeSelected="(newSize) => this.brushSize = newSize"
+      ></BrushSizeInput>
+
+      <DrawingTable
+          v-if="colors.length > 0"
+          :rowCount="rows"
+          :colCount="columns"
+          :colors="colors"
+          :selectedColor="selectedColor"
+          :htmlTable="imageTable"
+          :doneImgRender="doneImageToTable"
+          :brushSize="brushSize"
+          :ref="'drawingTableRef'"
+          @click="displayInstructions = false"
+          @doneImgRender="doneImageToTable = true"
+          @cellSize="(size) => this.cellSize = size"
+      />
+    </div>
 
     <div class="table-buttons">
       <button @click="createInstructions"> create instructions </button>
@@ -69,7 +72,6 @@
         :key="instructionsKey"
         @hideInstructions="toggleShowInstructions"
     />
-
   </div>
 </template>
 
@@ -79,6 +81,7 @@ import InstructionsTable from "@/components/InstructionsTable.vue";
 import ColorsInput from "@/components/ColorsInput.vue";
 import CustomCursor from "@/components/CustomCursor.vue";
 import { CursorMode } from "@/enums.js"
+import BrushSizeInput from "@/components/BrushSizeInput.vue";
 
 export default {
   name: "StudioPage",
@@ -87,8 +90,8 @@ export default {
 
   data() {
     return {
-      rows: this.isFromImage() ? this.getRowCountFromTable() : 1,
-      columns: this.isFromImage() ? this.getColCountFromTable() : 1,
+      rows: this.isFromImage() ? this.getRowCountFromTable() : 10,
+      columns: this.isFromImage() ? this.getColCountFromTable() : 10,
       cellSize: 10,
       colors: [],
       selectedColor: {},
@@ -100,7 +103,7 @@ export default {
       doneImageToTable: false,
       cursorModes: CursorMode,
       cursorMode: CursorMode.DEFAULT,
-      brushSize: 's',
+      brushSize: 1,
     };
   },
 
@@ -201,13 +204,14 @@ export default {
       newWindow.document.close();
     },
 
-    assignCursorMode(selectedMode) {
-      if(this.cursorMode === selectedMode) this.cursorMode = this.cursorModes['DEFAULT'];
-      else this.cursorMode = selectedMode;
-    }
+    // assignCursorMode(selectedMode) {
+    //   if(this.cursorMode === selectedMode) this.cursorMode = this.cursorModes['DEFAULT'];
+    //   else this.cursorMode = selectedMode;
+    // }
   },
 
   components: {
+    BrushSizeInput,
     CustomCursor,
     DrawingTable,
     InstructionsTable,
